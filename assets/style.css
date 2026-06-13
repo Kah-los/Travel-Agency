@@ -157,6 +157,51 @@ body {
   .lift:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
 }
 
+/* -------------------------------------------------------------
+   Editorial image cards (destination categories + popular trips)
+   Image-led, immersive — not a grid of buttons. Image zooms under
+   a fixed frame on hover (gated to fine pointers); transform-only.
+   ------------------------------------------------------------- */
+.media {
+  position: relative; overflow: hidden; border-radius: inherit;
+  background: var(--navy-800);
+}
+.media img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transition: transform .7s var(--ease-out);
+  will-change: transform;
+}
+.media .scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(7,13,36,.88) 2%, rgba(7,13,36,.30) 42%, rgba(7,13,36,0) 72%);
+}
+.media .label {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1.15rem 1.3rem; color: #fff;
+}
+.media .label .tag {
+  display: inline-block; margin-bottom: .4rem;
+  width: 26px; height: 2px; border-radius: 2px; background: var(--gold);
+  transform-origin: left; transform: scaleX(1);
+  transition: width .4s var(--ease-out);
+}
+
+/* Category card: tall portrait, label only */
+.cat-card { position: relative; display: block; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-md); }
+.cat-card .media { aspect-ratio: 3 / 4; }
+
+/* Trip card: image (name overlaid) + description below */
+.trip-card { overflow: hidden; }
+.trip-card .media { aspect-ratio: 4 / 3; border-radius: 20px 20px 0 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .cat-card:hover .media img,
+  .trip-card:hover .media img { transform: scale(1.07); }
+  .cat-card:hover .media .label .tag { width: 46px; }
+  .cat-card:active, .trip-card:active { transform: scale(0.99); }
+}
+.cat-card, .trip-card { transition: transform 160ms var(--ease-out), box-shadow .35s var(--ease-out); }
+
 /* Eyebrow used ONCE deliberately (hero), not as section grammar */
 .kicker {
   display: inline-flex; align-items: center; gap: .5rem;

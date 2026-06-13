@@ -60,7 +60,17 @@ $whatsapp = clean('whatsapp');
 $country  = clean('country');
 $interest = clean('travel_interest');
 
-$allowedInterests = ['Leisure', 'Business', 'Family', 'All of the Above'];
+// Must mirror the <select> options in index.php, or valid submissions are rejected.
+$allowedInterests = [
+    'Family Vacation',
+    'Beach Getaway',
+    'Cruise',
+    'City Break',
+    'Weekend Trip',
+    'Honeymoon or Anniversary',
+    'Visiting Family or Friends',
+    'All of the Above',
+];
 $errors = [];
 
 if ($fullName === '' || mb_strlen($fullName) > 120) {

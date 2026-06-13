@@ -135,12 +135,12 @@ $serverError = isset($_GET['error']);
 
   <div class="relative z-10 mx-auto max-w-4xl px-5 text-center text-white sm:px-8">
     <p class="reveal kicker mb-6 justify-center">Hosted personally by Naomi Henry · Vortex365 Ambassador</p>
-    <h1 class="reveal font-display text-[clamp(2.7rem,8vw,5.5rem)] font-bold leading-[1.03] tracking-tight" style="text-wrap:balance;">
-      Stop Overpaying<br>for Travel
+    <h1 class="reveal font-display text-[clamp(2.5rem,7.5vw,5.25rem)] font-bold leading-[1.04] tracking-tight" style="text-wrap:balance;">
+      Stop Paying Full Price<br>for Travel.
     </h1>
     <p class="reveal mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl" data-delay="1">
-      Naomi Henry gives you access to a members-only travel portal that beats Expedia
-      and Booking.com up to 90% of the time, completely free to join.
+      Access exclusive member pricing on hotels, cruises, resorts, vacation packages,
+      and family getaways worldwide. Free to join, no credit card required.
     </p>
     <div class="reveal mt-10 flex flex-col items-center gap-4" data-delay="2">
       <a href="<?= $ref ?>" class="btn btn-gold px-10 py-4 text-base sm:text-lg">Get My Free Access</a>
@@ -172,6 +172,83 @@ $serverError = isset($_GET['error']);
       <p class="mx-auto mt-5 max-w-[15rem] leading-relaxed text-ink-2"><?= $label ?></p>
     </div>
     <?php endforeach; ?>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 3b — DESTINATION CATEGORIES (light, editorial cards)
+     ========================================================= -->
+<section id="categories" class="sec-mist edge-top py-24 sm:py-28">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">However you love to travel</h2>
+      <p class="lede mt-4 text-lg">Pick the kind of trip you have in mind. Member pricing covers them all.</p>
+    </div>
+
+    <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <?php
+        $cats = [
+          ['Family Vacations', 'Family Vacation', '1542037104857-ffbb0b9155fb', 'A family walking together on holiday'],
+          ['Beach Getaways',   'Beach Getaway',   '1507525428034-b723cf961d3e', 'A sunlit tropical beach at golden hour'],
+          ['Cruises',          'Cruise',          '1599640842225-85d111c60e6b', 'A cruise ship moored beside a turquoise bay'],
+          ['Weekend Trips',    'Weekend Trip',    '1513635269975-59663e0ac1ad', 'Tower Bridge and the London skyline at dusk'],
+        ];
+        foreach ($cats as $i => [$label, $interest, $pid, $alt]):
+      ?>
+      <a href="#get-started" data-interest="<?= $interest ?>"
+         class="cat-card reveal lift" data-delay="<?= $i ?>"
+         aria-label="<?= $label ?> — jump to sign-up">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-<?= $pid ?>?auto=format&fit=crop&w=800&q=80"
+               alt="<?= $alt ?>" loading="lazy" width="600" height="800">
+          <div class="scrim"></div>
+          <div class="label">
+            <span class="tag"></span>
+            <h3 class="font-display text-xl font-semibold leading-tight"><?= $label ?></h3>
+          </div>
+        </div>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 3c — POPULAR TRIPS MEMBERS SEARCH FOR (editorial)
+     ========================================================= -->
+<section id="trips" class="sec-paper py-24 sm:py-28">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Popular Trips Members Search For</h2>
+      <p class="lede mt-4 text-lg">Chances are the trip you're already dreaming about is right here.</p>
+    </div>
+
+    <div class="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+      <?php
+        $trips = [
+          ['Orlando Family Vacation', 'Where family memories are made',          'Family Vacation',            '1597466599360-3b9775841aec', 'The Orlando theme-park castle under a blue sky'],
+          ['Caribbean Cruise',        'Sun, sea, and savings on the open water', 'Cruise',                     '1548574505-5e239809ee19',   'Cruise ships docked at a turquoise Caribbean port'],
+          ['Las Vegas Weekend',       'The ultimate long weekend escape',        'Weekend Trip',               '1581351721010-8cf859cb14a4', 'The Las Vegas Strip lit up at night'],
+          ['Cancun Beach Getaway',    'White sand, clear water, member pricing', 'Beach Getaway',              '1519046904884-53103b34b206', 'Palm trees on a white-sand Cancun beach'],
+          ['New York City Break',     'The city that never stops surprising you','City Break',                 '1485871981521-5b1fd3805eee', 'The Manhattan skyline at golden hour'],
+          ['Visiting Family Overseas','Getting there should not cost a fortune',  'Visiting Family or Friends', '1436491865332-7a61a109cc05', 'An aeroplane wing above the clouds'],
+        ];
+        foreach ($trips as $i => [$name, $desc, $interest, $pid, $alt]):
+      ?>
+      <a href="#get-started" data-interest="<?= $interest ?>"
+         class="trip-card card reveal lift" data-delay="<?= $i % 3 ?>">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-<?= $pid ?>?auto=format&fit=crop&w=900&q=80"
+               alt="<?= $alt ?>" loading="lazy" width="800" height="600">
+          <div class="scrim"></div>
+          <div class="label">
+            <h3 class="font-display text-xl font-bold leading-tight"><?= $name ?></h3>
+          </div>
+        </div>
+        <p class="px-6 py-5 leading-relaxed text-ink-2"><?= $desc ?></p>
+      </a>
+      <?php endforeach; ?>
+    </div>
   </div>
 </section>
 
@@ -382,9 +459,13 @@ $serverError = isset($_GET['error']);
                   class="input-base appearance-none" x-model="f.travel_interest"
                   @change="touch('travel_interest')" :class="cls('travel_interest')">
             <option value="" disabled>Choose one…</option>
-            <option value="Leisure">Leisure</option>
-            <option value="Business">Business</option>
-            <option value="Family">Family</option>
+            <option value="Family Vacation">Family Vacation</option>
+            <option value="Beach Getaway">Beach Getaway</option>
+            <option value="Cruise">Cruise</option>
+            <option value="City Break">City Break</option>
+            <option value="Weekend Trip">Weekend Trip</option>
+            <option value="Honeymoon or Anniversary">Honeymoon or Anniversary</option>
+            <option value="Visiting Family or Friends">Visiting Family or Friends</option>
             <option value="All of the Above">All of the Above</option>
           </select>
           <p class="field-msg" x-text="errs.travel_interest"></p>
@@ -538,6 +619,19 @@ $serverError = isset($_GET['error']);
         p.style.width = sz + 'px'; p.style.height = sz + 'px';
         host.appendChild(p);
       }
+    });
+  })();
+
+  /* ---- Category / trip cards pre-select the matching interest ---- */
+  (function () {
+    document.querySelectorAll('[data-interest]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var sel = document.getElementById('travel_interest');
+        if (!sel) return;
+        sel.value = el.getAttribute('data-interest');
+        // Notify Alpine's x-model (it listens for `change` on selects).
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
     });
   })();
 
