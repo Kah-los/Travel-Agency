@@ -1,0 +1,115 @@
+<?php
+/**
+ * =============================================================
+ *  TravelWithNaomi — Database + Email Configuration (TEMPLATE)
+ * -------------------------------------------------------------
+ *  This is the VERSION-CONTROLLED template. The real file
+ *  (config/db.php) is git-ignored so live credentials never get
+ *  committed.
+ *
+ *  SETUP:
+ *    1. Copy this file to config/db.php
+ *           cp config/db.php.example config/db.php
+ *    2. Fill in the values below, OR (on Railway) set the
+ *       matching environment variables named in each comment.
+ *
+ *  Each constant reads its environment variable first and only
+ *  falls back to the string below if the env var is missing.
+ * =============================================================
+ */
+
+/**
+ * Read an environment variable, falling back to a default.
+ * Treats empty strings as "not set".
+ */
+function env_or(string $name, string $default): string {
+    $val = getenv($name);
+    return ($val !== false && $val !== '') ? $val : $default;
+}
+
+// ---- DATABASE CREDENTIALS -------------------------------------------------
+// Railway env var: MYSQLHOST
+define('DB_HOST', env_or('MYSQLHOST', ''));         // e.g. 'localhost' on cPanel
+// Railway env var: MYSQLDATABASE
+define('DB_NAME', env_or('MYSQLDATABASE', ''));     // e.g. 'naomi_travel'
+// Railway env var: MYSQLUSER
+define('DB_USER', env_or('MYSQLUSER', ''));         // e.g. 'naomi_admin'
+// Railway env var: MYSQLPASSWORD
+define('DB_PASS', env_or('MYSQLPASSWORD', ''));     // your database password
+// Railway env var: MYSQLPORT (Railway uses a non-3306 port)
+define('DB_PORT', env_or('MYSQLPORT', '3306'));
+
+// ---- SMTP EMAIL (optional) ------------------------------------------------
+// Leave SMTP_ENABLED false to use PHP mail() (the cPanel default).
+// Flip it to true ONLY after every SMTP_* value below is filled in.
+// On Railway, set the matching environment variables instead of editing here.
+define('SMTP_ENABLED', filter_var(env_or('SMTP_ENABLED', 'false'), FILTER_VALIDATE_BOOLEAN));
+
+// Railway env var: SMTP_HOST   — your mail provider's SMTP server
+define('SMTP_HOST', env_or('SMTP_HOST', ''));            // e.g. 'smtp.gmail.com', 'smtp.sendgrid.net'
+// Railway env var: SMTP_PORT   — 587 for TLS (recommended), 465 for SSL
+define('SMTP_PORT', (int) env_or('SMTP_PORT', '587'));
+// Railway env var: SMTP_USERNAME — usually your full email or an API user
+define('SMTP_USERNAME', env_or('SMTP_USERNAME', ''));
+// Railway env var: SMTP_PASSWORD — mailbox password or provider API key
+define('SMTP_PASSWORD', env_or('SMTP_PASSWORD', ''));
+// Railway env var: SMTP_FROM_EMAIL — the "from" address recipients see
+define('SMTP_FROM_EMAIL', env_or('SMTP_FROM_EMAIL', ''));
+// Railway env var: SMTP_FROM_NAME — the "from" name recipients see
+define('SMTP_FROM_NAME', env_or('SMTP_FROM_NAME', ''));
+
+/**
+ * True only when SMTP is switched on AND every credential is a real value.
+ * submit.php uses this to decide whether to send via SMTP or fall back to mail().
+ */
+function smtp_ready(): bool {
+    if (!SMTP_ENABLED) {
+        return false;
+    }
+    foreach ([SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME] as $v) {
+        if ($v === '' || $v[0] === '[') { // empty or still a [placeholder]
+            return false;
+        }
+    }
+    return SMTP_PORT > 0;
+}
+
+/**
+ * Returns a shared PDO connection, or null if the database is
+ * unreachable. Never throws to the page.
+ *
+ * @return PDO|null
+ */
+function db() {
+    static $pdo = null;
+    static $tried = false;
+
+    if ($tried) {
+        return $pdo;
+    }
+    $tried = true;
+
+    $dsn = sprintf(
+        'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+        DB_HOST,
+        DB_PORT,
+        DB_NAME
+    );
+
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]);
+    } catch (PDOException $e) {
+        // Silent for the visitor; logged for the owner.
+        error_log('[TravelWithNaomi] DB connection failed: ' . $e->getMessage());
+        $pdo = null;
+    }
+
+    return $pdo;
+}
+
+// Establish the connection test immediately so includes can rely on db().
+db();

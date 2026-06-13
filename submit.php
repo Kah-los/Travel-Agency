@@ -119,6 +119,11 @@ if ($pdo instanceof PDO) {
 
 /* -----------------------------------------------------------
  *  Notify the ambassador by email
+ *  ----------------------------------------------------------
+ *  The subject + body are identical regardless of transport.
+ *  If SMTP is configured (smtp_ready()), send via PHPMailer over
+ *  TLS. Otherwise fall back to PHP mail(). Either way, email
+ *  failures never block the redirect.
  * --------------------------------------------------------- */
 if (MY_EMAIL !== '[MY_EMAIL]' && filter_var(MY_EMAIL, FILTER_VALIDATE_EMAIL)) {
     $subject = 'New TravelWithNaomi lead: ' . $fullName;
@@ -132,14 +137,46 @@ if (MY_EMAIL !== '[MY_EMAIL]' && filter_var(MY_EMAIL, FILTER_VALIDATE_EMAIL)) {
         "IP address:      {$ip}\n" .
         "Captured at:     " . date('Y-m-d H:i:s') . " UTC\n";
 
-    $headers = [
-        'From: TravelWithNaomi <no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '>',
-        'Reply-To: ' . $email,
-        'Content-Type: text/plain; charset=UTF-8',
-    ];
+    if (smtp_ready()) {
+        // ---- SMTP path (PHPMailer over TLS) ----
+        require_once __DIR__ . '/libs/phpmailer/Exception.php';
+        require_once __DIR__ . '/libs/phpmailer/PHPMailer.php';
+        require_once __DIR__ . '/libs/phpmailer/SMTP.php';
 
-    // @-suppressed: mail() may be disabled on some hosts; never block the redirect.
-    @mail(MY_EMAIL, $subject, $body, implode("\r\n", $headers));
+        $mail = new PHPMailer\PHPMailer\PHPMailer(false); // false = don't throw; we check return value
+        try {
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USERNAME;
+            $mail->Password   = SMTP_PASSWORD;
+            $mail->Port       = SMTP_PORT;
+            // 465 = implicit SSL, anything else (e.g. 587) = STARTTLS.
+            $mail->SMTPSecure = (SMTP_PORT === 465)
+                ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
+                : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+
+            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+            $mail->addAddress(MY_EMAIL);
+            $mail->addReplyTo($email, $fullName);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = $subject;
+            $mail->Body    = $body; // plain text
+            $mail->send();
+        } catch (\Throwable $e) {
+            // Log silently; never surface to the visitor or block the redirect.
+            error_log('[TravelWithNaomi] SMTP send failed: ' . $e->getMessage() . ' | ' . $mail->ErrorInfo);
+        }
+    } else {
+        // ---- Fallback path (PHP mail(), the cPanel default) ----
+        $headers = [
+            'From: TravelWithNaomi <no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '>',
+            'Reply-To: ' . $email,
+            'Content-Type: text/plain; charset=UTF-8',
+        ];
+        // @-suppressed: mail() may be disabled on some hosts; never block the redirect.
+        @mail(MY_EMAIL, $subject, $body, implode("\r\n", $headers));
+    }
 }
 
 /* -----------------------------------------------------------
