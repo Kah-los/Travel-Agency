@@ -1,229 +1,333 @@
 /* =============================================================
-   TravelWithNaomi — Custom styles
-   Tailwind (CDN) handles layout/utilities; this file owns the
-   brand motion, the gold shimmer, the hero atmosphere, and the
-   scroll-reveal system. Loaded after Tailwind in index.php.
+   TravelWithNaomi — Premium UI (skills-driven redesign)
+   -------------------------------------------------------------
+   Design direction synthesised from three skills:
+   • ui-ux-pro-max → luxury palette is LIGHT + airy with a gold
+     accent; navy is used as drenched punctuation, not as the
+     whole page. Waitlist/exclusivity + social-proof pattern.
+   • emil-design-eng → motion craft: custom easing, scale(0.97)
+     on press, no `transition: all`, exact properties only,
+     hover gated to fine pointers, short staggers, reduced-motion
+     keeps opacity and drops movement.
+   • frontend-design (impeccable) → committed palette, contrast
+     verified, no warm-cream AI tell (off-white tinted cool toward
+     the brand hue), no side-stripe cards, real imagery.
+   Tailwind (CDN) handles layout utilities; this file owns tokens,
+   motion, components, and section atmospheres.
    ============================================================= */
 
 :root {
-  --navy:        #0B1437;
+  /* ---- Brand palette ---- */
+  --navy:        #0B1437;   /* deep brand navy — drenched sections + ink */
+  --navy-900:    #070d24;
   --navy-800:    #101a44;
   --navy-700:    #16224f;
   --navy-600:    #1d2b60;
-  --gold:        #C9A84C;
+
+  --gold:        #C9A84C;   /* bright gold — fills, borders, stars, on-navy text */
   --gold-light:  #E4C97B;
   --gold-dark:   #A88A38;
-  --ink:         #0B1437;
-  --paper:       #ffffff;
+  --gold-ink:    #8A6D1F;   /* darker gold — gold TEXT on light bg (passes ~4.5:1) */
 
-  /* Semantic z-index scale */
+  /* ---- Light surfaces (airy) ---- */
+  --paper:       #FFFFFF;                 /* pure white cards/sections */
+  --mist:        #F3F6FB;                 /* faint COOL off-white (navy-tinted, not warm cream) */
+  --mist-deep:   #EAEFF7;
+
+  /* ---- Ink (text) ---- */
+  --ink:         #0B1437;   /* near-black navy on light — excellent contrast */
+  --ink-soft:    #49506640; /* placeholder fallback (overridden below) */
+  --ink-2:       #495066;   /* secondary text on light (~7:1 on white) */
+  --ink-3:       #6B7286;   /* tertiary / captions */
+  --line:        #E2E7F0;   /* hairline borders on light */
+  --line-strong: #CBD3E1;
+
+  /* ---- Motion (emil) ---- */
+  --ease-out:     cubic-bezier(0.23, 1, 0.32, 1);   /* strong ease-out for UI */
+  --ease-in-out:  cubic-bezier(0.77, 0, 0.175, 1);  /* on-screen movement */
+  --ease-drawer:  cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ---- Premium soft shadows (navy-tinted) ---- */
+  --shadow-sm: 0 1px 2px rgba(11,20,55,.06), 0 1px 3px rgba(11,20,55,.05);
+  --shadow-md: 0 6px 18px -6px rgba(11,20,55,.12), 0 2px 6px -2px rgba(11,20,55,.06);
+  --shadow-lg: 0 24px 50px -16px rgba(11,20,55,.20), 0 10px 20px -10px rgba(11,20,55,.10);
+  --shadow-gold: 0 18px 44px -16px rgba(201,168,76,.55);
+
+  /* ---- Z-index scale ---- */
   --z-sticky:  100;
   --z-overlay: 800;
 }
 
 * { -webkit-tap-highlight-color: transparent; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 84px; }
-body { font-family: 'Inter', system-ui, sans-serif; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+html, body { overflow-x: hidden; }
+body {
+  font-family: 'Jost', system-ui, sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: .005em;
+}
 
 .font-display { font-family: 'Playfair Display', Georgia, serif; }
 
-/* Prevent any horizontal scroll on small screens */
-html, body { overflow-x: hidden; }
+/* Section background helpers (drives the light/navy rhythm) */
+.sec-paper { background: var(--paper); }
+.sec-mist  { background: var(--mist); }
+.sec-navy  { background: var(--navy); color: #fff; }
+
+/* Hairline divider between two light sections (kept subtle) */
+.edge-top { border-top: 1px solid var(--line); }
 
 /* -------------------------------------------------------------
-   Scroll-reveal
-   Content is visible by default. Only when JS adds `.js` to
-   <html> do we hide-then-reveal, so no-JS / headless renderers
-   still show everything.
+   Scroll-reveal — visible by default; only the `.js` class (set
+   inline before paint) opts into the hide-then-reveal so no-JS /
+   headless renders still show everything. reduced-motion keeps
+   opacity, drops movement.
    ------------------------------------------------------------- */
-.reveal { will-change: opacity, transform; }
 .js .reveal {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity .7s cubic-bezier(.16,1,.3,1),
-              transform .7s cubic-bezier(.16,1,.3,1);
+  transform: translateY(18px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+  will-change: opacity, transform;
 }
-.js .reveal.in-view {
-  opacity: 1;
-  transform: none;
-}
-/* Stagger helper for items inside a revealed group */
-.js .reveal[data-delay="1"] { transition-delay: .08s; }
-.js .reveal[data-delay="2"] { transition-delay: .16s; }
-.js .reveal[data-delay="3"] { transition-delay: .24s; }
+.js .reveal.in-view { opacity: 1; transform: none; }
+.js .reveal[data-delay="1"] { transition-delay: .06s; }
+.js .reveal[data-delay="2"] { transition-delay: .12s; }
+.js .reveal[data-delay="3"] { transition-delay: .18s; }
+.js .reveal[data-delay="4"] { transition-delay: .24s; }
 
 /* -------------------------------------------------------------
-   Gold shimmer — for primary CTA buttons
+   Buttons
    ------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  border-radius: 9999px; font-weight: 600; line-height: 1;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: transform 160ms var(--ease-out), box-shadow 200ms var(--ease-out),
+              background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.btn:active { transform: scale(0.97); }      /* emil: instant press feedback */
+
+/* Primary gold (navy text) with shimmer */
 .btn-gold {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, var(--gold-dark) 100%);
+  position: relative; overflow: hidden; isolation: isolate;
   color: var(--navy);
-  font-weight: 700;
-  border-radius: 9999px;
-  box-shadow: 0 10px 30px -12px rgba(201,168,76,.6);
-  transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .25s ease-out;
-  isolation: isolate;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, var(--gold-dark) 100%);
+  box-shadow: var(--shadow-gold);
 }
-.btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 44px -14px rgba(201,168,76,.75);
-}
-.btn-gold:active { transform: translateY(0); }
 .btn-gold::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.55) 50%, transparent 75%);
-  transform: translateX(-120%);
-  transition: transform .85s cubic-bezier(.16,1,.3,1);
-  z-index: -1;
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.6) 50%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform .8s var(--ease-out);
 }
-.btn-gold:hover::after { transform: translateX(120%); }
 
-/* Outline / ghost gold button */
+/* Ghost gold (on navy) */
 .btn-ghost {
-  border: 1.5px solid var(--gold);
+  border: 1.5px solid rgba(201,168,76,.7); color: var(--gold);
+  background: transparent;
+}
+
+/* Outline navy (on light) */
+.btn-outline {
+  border: 1.5px solid var(--line-strong); color: var(--ink); background: var(--paper);
+}
+
+/* Hover only on real pointers (emil) */
+@media (hover: hover) and (pointer: fine) {
+  .btn-gold:hover    { transform: translateY(-2px); box-shadow: 0 24px 54px -16px rgba(201,168,76,.7); }
+  .btn-gold:hover::after { transform: translateX(130%); }
+  .btn-ghost:hover   { background: var(--gold); color: var(--navy); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold-ink); box-shadow: var(--shadow-md); }
+}
+
+/* -------------------------------------------------------------
+   Cards & lift
+   ------------------------------------------------------------- */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lift:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+}
+
+/* Eyebrow used ONCE deliberately (hero), not as section grammar */
+.kicker {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .8rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
   color: var(--gold);
-  border-radius: 9999px;
-  font-weight: 600;
-  transition: background .25s, color .25s, transform .2s;
 }
-.btn-ghost:hover { background: var(--gold); color: var(--navy); transform: translateY(-2px); }
+.kicker::before { content: ""; width: 26px; height: 1px; background: currentColor; opacity: .6; }
+
+/* Section heading lead-in on light (a thin gold rule, not an eyebrow on every section) */
+.lede { color: var(--ink-2); }
 
 /* -------------------------------------------------------------
-   Card hover lift
+   Hero — drenched navy with a real destination photo + overlay
    ------------------------------------------------------------- */
-.lift { transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease-out; }
-.lift:hover { transform: translateY(-6px); box-shadow: 0 26px 60px -28px rgba(0,0,0,.7); }
-
-/* -------------------------------------------------------------
-   Hero atmosphere — gold floating destinations + drift particles
-   ------------------------------------------------------------- */
-.hero-bg {
+.hero {
+  position: relative; isolation: isolate;
+  background: var(--navy-900);
+}
+.hero-photo {
+  position: absolute; inset: 0; z-index: -2;
+  background-size: cover; background-position: center;
+  /* image set inline so we can swap/verify the URL */
+}
+.hero-overlay {
+  position: absolute; inset: 0; z-index: -1;
   background:
-    radial-gradient(1200px 700px at 75% -10%, rgba(201,168,76,.16), transparent 55%),
-    radial-gradient(900px 600px at 10% 110%, rgba(29,43,96,.9), transparent 60%),
-    linear-gradient(160deg, #0B1437 0%, #0d1740 45%, #070d24 100%);
+    radial-gradient(1100px 700px at 78% -5%, rgba(201,168,76,.20), transparent 55%),
+    linear-gradient(180deg, rgba(7,13,36,.72) 0%, rgba(8,15,40,.82) 45%, rgba(7,13,36,.95) 100%);
 }
-
-.float-words { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.float-words { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
 .float-words span {
-  position: absolute;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  color: rgba(201,168,76,.16);
-  white-space: nowrap;
-  animation: drift linear infinite;
+  position: absolute; font-family: 'Playfair Display', serif; font-style: italic;
+  color: rgba(201,168,76,.18); white-space: nowrap;
   font-size: clamp(1.4rem, 4vw, 3rem);
+  animation: drift linear infinite;
 }
 @keyframes drift {
-  0%   { transform: translateY(20px); opacity: 0; }
-  15%  { opacity: 1; }
-  85%  { opacity: 1; }
-  100% { transform: translateY(-60px); opacity: 0; }
+  0% { transform: translateY(24px); opacity: 0; }
+  18%,82% { opacity: 1; }
+  100% { transform: translateY(-64px); opacity: 0; }
 }
-
-/* soft drifting gold particles */
-.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
 .particles i {
-  position: absolute; bottom: -10px;
-  width: 4px; height: 4px; border-radius: 50%;
+  position: absolute; bottom: -10px; border-radius: 50%;
   background: radial-gradient(circle, var(--gold-light), rgba(201,168,76,0));
-  animation: rise linear infinite;
-  opacity: .0;
+  animation: rise linear infinite; opacity: 0;
 }
 @keyframes rise {
-  0%   { transform: translateY(0) scale(.6); opacity: 0; }
-  10%  { opacity: .9; }
-  100% { transform: translateY(-105vh) scale(1.1); opacity: 0; }
+  0% { transform: translateY(0) scale(.6); opacity: 0; }
+  12% { opacity: .9; }
+  100% { transform: translateY(-108vh) scale(1.1); opacity: 0; }
 }
 
 /* -------------------------------------------------------------
-   Form field validation feedback
+   Trust stats (light, airy)
    ------------------------------------------------------------- */
-.field-msg { font-size: .78rem; margin-top: 6px; min-height: 1em; color: #f3a9a9; }
-.input-base {
-  width: 100%;
-  background: rgba(7,13,36,.55);
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 12px;
-  color: #fff;
-  padding: 13px 15px;
-  font-family: inherit; font-size: 1rem;
-  transition: border-color .2s, box-shadow .2s;
+.stat-num {
+  font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1;
+  font-size: clamp(2.8rem, 7vw, 3.6rem);
+  color: var(--ink);
 }
-.input-base::placeholder { color: #8b93ad; }
-.input-base:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,.2); }
-.input-base.invalid { border-color: #d65b5b; box-shadow: 0 0 0 3px rgba(214,91,91,.18); }
-.input-base.valid   { border-color: rgba(201,168,76,.7); }
+.stat-num .unit { color: var(--gold-ink); }
+.stat-rule { width: 38px; height: 3px; border-radius: 2px; background: var(--gold); margin: 1rem auto 0; }
 
 /* -------------------------------------------------------------
-   Comparison table
+   How it works — connector line
+   ------------------------------------------------------------- */
+.steps { position: relative; }
+@media (min-width: 768px) {
+  .steps::before {
+    content: ""; position: absolute; top: 40px; left: 16%; right: 16%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--line-strong) 18%, var(--line-strong) 82%, transparent);
+    z-index: 0;
+  }
+}
+.step-badge {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.9rem;
+  color: var(--gold-ink); background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md), inset 0 0 0 6px rgba(201,168,76,.06);
+}
+
+/* -------------------------------------------------------------
+   Comparison table (light)
    ------------------------------------------------------------- */
 .cmp { width: 100%; border-collapse: separate; border-spacing: 0; }
 .cmp th, .cmp td { padding: 16px 18px; text-align: center; }
 .cmp th:first-child, .cmp td:first-child { text-align: left; }
-.cmp thead th { font-size: .8rem; letter-spacing: .04em; color: #c7cddd; font-weight: 600; }
-.cmp tbody td { border-top: 1px solid rgba(255,255,255,.08); color: #d6dbec; }
-.cmp .win-col {
-  background: linear-gradient(180deg, rgba(201,168,76,.14), rgba(201,168,76,.05));
-  color: #fff;
-}
+.cmp thead th { font-size: .82rem; font-weight: 600; letter-spacing: .03em; color: var(--ink-2); }
+.cmp tbody td { border-top: 1px solid var(--line); color: var(--ink-2); }
+.cmp tbody td:first-child { color: var(--ink); font-weight: 500; }
+.cmp .win-col { background: linear-gradient(180deg, rgba(201,168,76,.12), rgba(201,168,76,.05)); color: var(--ink); }
 .cmp thead .win-col {
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   color: var(--navy); font-weight: 700;
-  border-top-left-radius: 14px; border-top-right-radius: 14px;
+  border-radius: 14px 14px 0 0;
 }
-.cmp tbody tr:last-child .win-col {
-  border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
-}
-.tick { color: var(--gold); font-weight: 700; }
-.cross { color: #d65b5b; }
-.win-col .tick { color: var(--gold-dark); }
+.cmp tbody tr:last-child .win-col { border-radius: 0 0 14px 14px; }
+.cmp .win-strong { font-weight: 700; color: var(--navy); }
+.tick { color: var(--gold-dark); font-weight: 700; font-size: 1.15rem; }
+.cross { color: #C0463F; font-size: 1.05rem; }
 
 /* -------------------------------------------------------------
-   Success overlay (lead form)
+   Testimonials — full-border cards + gold quote glyph
+   (no side-stripe; impeccable ban)
+   ------------------------------------------------------------- */
+.quote { position: relative; }
+.quote::before {
+  content: "\201C"; position: absolute; top: -.35em; left: .35rem;
+  font-family: 'Playfair Display', serif; font-size: 4.5rem; line-height: 1;
+  color: rgba(201,168,76,.28);
+}
+.stars { color: var(--gold); }
+
+/* -------------------------------------------------------------
+   About photo — gold glow frame
+   ------------------------------------------------------------- */
+.glow-frame {
+  border: 1px solid rgba(201,168,76,.5);
+  box-shadow: 0 0 0 6px rgba(201,168,76,.08), var(--shadow-lg);
+  border-radius: 24px;
+}
+
+/* -------------------------------------------------------------
+   Lead form (on navy drenched section) — inputs
+   ------------------------------------------------------------- */
+.field-msg { font-size: .78rem; margin-top: 6px; min-height: 1.05em; color: #f3a9a9; }
+.input-base {
+  width: 100%;
+  background: rgba(7,13,36,.55);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 12px; color: #fff;
+  padding: 13px 15px; font-family: inherit; font-size: 1rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.input-base::placeholder { color: #939bb4; }
+.input-base:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,.22); background: rgba(7,13,36,.7); }
+.input-base.invalid { border-color: #D8645C; box-shadow: 0 0 0 3px rgba(216,100,92,.18); }
+.input-base.valid   { border-color: rgba(201,168,76,.7); }
+
+/* -------------------------------------------------------------
+   Success overlay
    ------------------------------------------------------------- */
 .overlay {
   position: fixed; inset: 0; z-index: var(--z-overlay);
   display: none; place-items: center; text-align: center; padding: 24px;
-  background: radial-gradient(circle at 50% 35%, rgba(22,34,79,.97), rgba(7,13,36,.98));
+  background: radial-gradient(circle at 50% 38%, rgba(22,34,79,.97), rgba(7,13,36,.98));
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  opacity: 0;
 }
-.overlay.show { display: grid; animation: fadein .3s ease-out; }
+.overlay.show { display: grid; animation: overlay-in .28s var(--ease-out) forwards; }
 .overlay .ring {
-  width: 64px; height: 64px; margin: 0 auto 26px;
+  width: 62px; height: 62px; margin: 0 auto 26px;
   border: 3px solid rgba(201,168,76,.25); border-top-color: var(--gold);
-  border-radius: 50%; animation: spin .9s linear infinite;
+  border-radius: 50%; animation: spin .8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
 
-/* How-it-works connector line (desktop) */
-.steps-line { position: relative; }
-@media (min-width: 768px) {
-  .steps-line::before {
-    content: ""; position: absolute; top: 38px; left: 16%; right: 16%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(201,168,76,.5), transparent);
-    z-index: 0;
-  }
-}
-
-/* Photo gold glow */
-.glow-frame {
-  border: 1px solid rgba(201,168,76,.5);
-  box-shadow: 0 0 0 1px rgba(201,168,76,.2), 0 30px 70px -30px rgba(201,168,76,.45);
-}
+/* Nav shadow surface when scrolled */
+.nav-solid { background: rgba(255,255,255,.88); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--shadow-md); }
 
 /* -------------------------------------------------------------
-   Reduced motion: honour the user's preference everywhere
+   Reduced motion — keep opacity/colour, drop movement (emil)
    ------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .js .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .js .reveal { opacity: 1 !important; transform: none !important; transition: opacity .3s ease !important; }
   .float-words span, .particles i, .btn-gold::after, .overlay .ring { animation: none !important; }
-  .btn-gold:hover, .btn-ghost:hover, .lift:hover { transform: none; }
+  .btn:active { transform: none; }
+  .lift:hover, .btn-gold:hover, .btn-ghost:hover, .btn-outline:hover { transform: none; }
 }

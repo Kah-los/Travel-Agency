@@ -36,15 +36,14 @@ $serverError = isset($_GET['error']);
   <meta name="description" content="Naomi Henry gives you free access to a members-only travel portal that beats Expedia and Booking.com up to 90% of the time. Free to join, no credit card.">
   <meta name="theme-color" content="#0B1437">
 
-  <!-- Open Graph -->
   <meta property="og:title" content="TravelWithNaomi — Stop Overpaying for Travel">
   <meta property="og:description" content="A members-only travel portal that beats the major platforms up to 90% of the time. Free to join.">
   <meta property="og:type" content="website">
 
-  <!-- Fonts -->
+  <!-- Fonts: Playfair Display (display) + Jost (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind (CDN) + brand config -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -54,11 +53,14 @@ $serverError = isset($_GET['error']);
         extend: {
           colors: {
             navy:  { DEFAULT: '#0B1437', 900: '#070d24', 800: '#101a44', 700: '#16224f', 600: '#1d2b60' },
-            gold:  { DEFAULT: '#C9A84C', light: '#E4C97B', dark: '#A88A38' }
+            gold:  { DEFAULT: '#C9A84C', light: '#E4C97B', dark: '#A88A38', ink: '#8A6D1F' },
+            ink:   { DEFAULT: '#0B1437', 2: '#495066', 3: '#6B7286' },
+            paper: '#FFFFFF',
+            mist:  '#F3F6FB'
           },
           fontFamily: {
             display: ['"Playfair Display"', 'Georgia', 'serif'],
-            body:    ['Inter', 'system-ui', 'sans-serif']
+            body:    ['Jost', 'system-ui', 'sans-serif']
           }
         }
       }
@@ -68,14 +70,11 @@ $serverError = isset($_GET['error']);
   <!-- Alpine (CDN) for nav + form interactivity -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-  <!-- Custom brand styles -->
   <link rel="stylesheet" href="assets/style.css">
-
-  <!-- Add `js` to <html> so reveal styles only apply when JS is on -->
   <script>document.documentElement.classList.add('js');</script>
 </head>
 
-<body class="bg-navy text-white font-body antialiased selection:bg-gold/30">
+<body class="font-body selection:bg-gold/30">
 
 <!-- =========================================================
      SECTION 1 — NAVIGATION
@@ -83,82 +82,81 @@ $serverError = isset($_GET['error']);
 <header
   x-data="{ open: false, scrolled: false }"
   x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 24)"
-  :class="scrolled ? 'bg-navy-900/90 shadow-[0_8px_30px_-12px_rgba(0,0,0,.8)] backdrop-blur' : 'bg-transparent'"
-  class="fixed inset-x-0 top-0 z-[100] transition-colors duration-300"
+  :class="scrolled ? 'nav-solid' : ''"
+  class="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
 >
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-    <a href="#top" class="font-display text-xl font-bold tracking-tight sm:text-2xl">
+    <a href="#top" class="font-display text-xl font-bold tracking-tight transition-colors sm:text-2xl"
+       :class="scrolled ? 'text-ink' : 'text-white'">
       Travel<span class="text-gold">With</span>Naomi
     </a>
 
-    <!-- Desktop links -->
-    <div class="hidden items-center gap-8 md:flex">
-      <a href="#how" class="text-sm text-white/80 transition hover:text-gold">How It Works</a>
-      <a href="#why" class="text-sm text-white/80 transition hover:text-gold">Why Vortex</a>
-      <a href="#about" class="text-sm text-white/80 transition hover:text-gold">About Naomi</a>
-      <a href="#get-started" class="btn-gold px-6 py-2.5 text-sm">Get Started</a>
+    <div class="hidden items-center gap-9 md:flex">
+      <a href="#how"   class="text-sm font-medium transition-colors hover:text-gold" :class="scrolled ? 'text-ink-2' : 'text-white/85'">How It Works</a>
+      <a href="#why"   class="text-sm font-medium transition-colors hover:text-gold" :class="scrolled ? 'text-ink-2' : 'text-white/85'">Why Vortex</a>
+      <a href="#about" class="text-sm font-medium transition-colors hover:text-gold" :class="scrolled ? 'text-ink-2' : 'text-white/85'">About Naomi</a>
+      <a href="#get-started" class="btn btn-gold px-6 py-2.5 text-sm">Get Started</a>
     </div>
 
-    <!-- Hamburger -->
     <button @click="open = !open" class="md:hidden" :aria-expanded="open" aria-label="Toggle menu">
       <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
       <svg x-show="open" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </nav>
 
-  <!-- Mobile menu -->
   <div x-show="open" x-cloak x-transition.origin.top
-       class="border-t border-white/10 bg-navy-900/95 px-5 py-4 backdrop-blur md:hidden">
-    <a @click="open=false" href="#how" class="block py-3 text-white/85">How It Works</a>
-    <a @click="open=false" href="#why" class="block py-3 text-white/85">Why Vortex</a>
-    <a @click="open=false" href="#about" class="block py-3 text-white/85">About Naomi</a>
-    <a @click="open=false" href="#get-started" class="btn-gold mt-2 block px-6 py-3 text-center">Get Started</a>
+       class="border-t border-line bg-white/95 px-5 py-3 backdrop-blur md:hidden">
+    <a @click="open=false" href="#how"   class="block py-3 font-medium text-ink-2">How It Works</a>
+    <a @click="open=false" href="#why"   class="block py-3 font-medium text-ink-2">Why Vortex</a>
+    <a @click="open=false" href="#about" class="block py-3 font-medium text-ink-2">About Naomi</a>
+    <a @click="open=false" href="#get-started" class="btn btn-gold mt-2 block px-6 py-3 text-center">Get Started</a>
   </div>
 </header>
 
 <main id="top">
 
 <!-- =========================================================
-     SECTION 2 — HERO
+     SECTION 2 — HERO (drenched navy + destination photo)
      ========================================================= -->
-<section class="hero-bg relative flex min-h-[100svh] items-center overflow-hidden pt-24">
-  <!-- floating destination names (gold, subtle) -->
+<section class="hero relative flex min-h-[100svh] items-center pt-24">
+  <!-- Real destination photo (Maldives overwater) behind a navy gradient overlay -->
+  <div class="hero-photo" style="background-image:url('https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=2000&q=80');" aria-hidden="true"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+
   <div class="float-words" aria-hidden="true">
-    <span style="top:18%; left:8%;  animation-duration:17s; animation-delay:0s;">Santorini</span>
-    <span style="top:62%; left:14%; animation-duration:21s; animation-delay:3s;">Maldives</span>
-    <span style="top:30%; right:10%;animation-duration:19s; animation-delay:6s;">Bali</span>
-    <span style="top:74%; right:16%;animation-duration:23s; animation-delay:1.5s;">Paris</span>
-    <span style="top:44%; left:46%; animation-duration:25s; animation-delay:8s;">Cape Town</span>
-    <span style="top:12%; right:34%;animation-duration:20s; animation-delay:4.5s;">Tokyo</span>
+    <span style="top:17%; left:7%;  animation-duration:18s; animation-delay:0s;">Santorini</span>
+    <span style="top:64%; left:13%; animation-duration:22s; animation-delay:3s;">Maldives</span>
+    <span style="top:28%; right:9%; animation-duration:20s; animation-delay:6s;">Bali</span>
+    <span style="top:75%; right:15%;animation-duration:24s; animation-delay:1.5s;">Paris</span>
+    <span style="top:45%; left:47%; animation-duration:26s; animation-delay:8s;">Cape Town</span>
+    <span style="top:11%; right:33%;animation-duration:21s; animation-delay:4.5s;">Tokyo</span>
   </div>
-  <!-- drifting gold particles (generated by JS) -->
   <div class="particles" id="particles" aria-hidden="true"></div>
 
-  <div class="relative z-10 mx-auto max-w-4xl px-5 text-center sm:px-8">
-    <p class="reveal mb-5 text-sm font-medium tracking-wide text-gold/90">Hosted personally by Naomi Henry · Vortex365 Ambassador</p>
-    <h1 class="reveal font-display text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[1.04] tracking-tight" style="text-wrap:balance;">
+  <div class="relative z-10 mx-auto max-w-4xl px-5 text-center text-white sm:px-8">
+    <p class="reveal kicker mb-6 justify-center">Hosted personally by Naomi Henry · Vortex365 Ambassador</p>
+    <h1 class="reveal font-display text-[clamp(2.7rem,8vw,5.5rem)] font-bold leading-[1.03] tracking-tight" style="text-wrap:balance;">
       Stop Overpaying<br>for Travel
     </h1>
-    <p class="reveal mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl" data-delay="1">
+    <p class="reveal mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl" data-delay="1">
       Naomi Henry gives you access to a members-only travel portal that beats Expedia
       and Booking.com up to 90% of the time, completely free to join.
     </p>
-    <div class="reveal mt-9 flex flex-col items-center gap-4" data-delay="2">
-      <a href="<?= $ref ?>" class="btn-gold px-10 py-4 text-base sm:text-lg">Get My Free Access</a>
-      <p class="text-sm text-white/55">No credit card required · Free to join · Takes 2 minutes</p>
+    <div class="reveal mt-10 flex flex-col items-center gap-4" data-delay="2">
+      <a href="<?= $ref ?>" class="btn btn-gold px-10 py-4 text-base sm:text-lg">Get My Free Access</a>
+      <p class="text-sm text-white/60">No credit card required · Free to join · Takes 2 minutes</p>
     </div>
   </div>
 
-  <!-- scroll cue -->
-  <a href="#trust" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-gold/70 transition hover:text-gold" aria-label="Scroll down">
+  <a href="#trust" class="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-gold/70 transition hover:text-gold" aria-label="Scroll down">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
   </a>
 </section>
 
 <!-- =========================================================
-     SECTION 3 — TRUST BAR (count-up stats)
+     SECTION 3 — TRUST BAR (light, airy, count-up)
      ========================================================= -->
-<section id="trust" class="bg-navy-900 py-16 sm:py-20">
+<section id="trust" class="sec-paper py-20 sm:py-24">
   <div class="mx-auto grid max-w-6xl gap-6 px-5 sm:px-8 md:grid-cols-3" id="stats-row">
     <?php
       $stats = [
@@ -168,27 +166,26 @@ $serverError = isset($_GET['error']);
       ];
       foreach ($stats as $i => [$num, $suffix, $label]):
     ?>
-    <div class="reveal lift rounded-2xl border border-gold/35 bg-navy-700/60 px-7 py-9 text-center" data-delay="<?= $i ?>">
-      <div class="font-display text-5xl font-bold text-gold">
-        <span class="counter" data-target="<?= $num ?>">0</span><?= $suffix ?>
-      </div>
-      <p class="mx-auto mt-3 max-w-[15rem] text-sm leading-relaxed text-white/75"><?= $label ?></p>
+    <div class="reveal card lift px-8 py-10 text-center" data-delay="<?= $i ?>">
+      <div class="stat-num"><span class="counter" data-target="<?= $num ?>">0</span><span class="unit"><?= $suffix ?></span></div>
+      <div class="stat-rule"></div>
+      <p class="mx-auto mt-5 max-w-[15rem] leading-relaxed text-ink-2"><?= $label ?></p>
     </div>
     <?php endforeach; ?>
   </div>
 </section>
 
 <!-- =========================================================
-     SECTION 4 — HOW IT WORKS
+     SECTION 4 — HOW IT WORKS (light)
      ========================================================= -->
-<section id="how" class="bg-navy py-24 sm:py-28">
+<section id="how" class="sec-mist edge-top py-24 sm:py-28">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <div class="reveal mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight" style="text-wrap:balance;">Saving starts in three simple steps</h2>
-      <p class="mt-4 text-white/70">From sign-up to your first cheaper trip, the whole thing takes about two minutes.</p>
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Saving starts in three simple steps</h2>
+      <p class="lede mt-4 text-lg">From sign-up to your first cheaper trip, the whole thing takes about two minutes.</p>
     </div>
 
-    <div class="steps-line mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
+    <div class="steps mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
       <?php
         $steps = [
           ['1', 'Sign Up Free', "Create your account through Naomi's personal link. No card, no fee, no catch."],
@@ -198,11 +195,9 @@ $serverError = isset($_GET['error']);
         foreach ($steps as $i => [$n, $title, $desc]):
       ?>
       <div class="reveal relative z-10 text-center" data-delay="<?= $i ?>">
-        <div class="mx-auto flex h-[76px] w-[76px] items-center justify-center rounded-full border border-gold/40 bg-navy-800 font-display text-3xl font-bold text-gold shadow-[0_0_40px_-10px_rgba(201,168,76,.6)]">
-          <?= $n ?>
-        </div>
-        <h3 class="mt-6 font-display text-xl font-semibold"><?= $title ?></h3>
-        <p class="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-white/70"><?= $desc ?></p>
+        <div class="step-badge mx-auto"><?= $n ?></div>
+        <h3 class="mt-6 font-display text-xl font-semibold text-ink"><?= $title ?></h3>
+        <p class="mx-auto mt-3 max-w-xs leading-relaxed text-ink-2"><?= $desc ?></p>
       </div>
       <?php endforeach; ?>
     </div>
@@ -210,16 +205,16 @@ $serverError = isset($_GET['error']);
 </section>
 
 <!-- =========================================================
-     SECTION 5 — WHY THIS BEATS THE REST (comparison)
+     SECTION 5 — WHY THIS BEATS THE REST (light)
      ========================================================= -->
-<section id="why" class="bg-navy-900 py-24 sm:py-28">
+<section id="why" class="sec-paper py-24 sm:py-28">
   <div class="mx-auto max-w-5xl px-5 sm:px-8">
     <div class="reveal mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight" style="text-wrap:balance;">Why this beats the rest</h2>
-      <p class="mt-4 text-white/70">The same trips. A members-only price. See how the portal compares to the platforms you already use.</p>
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Why this beats the rest</h2>
+      <p class="lede mt-4 text-lg">The same trips. A members-only price. See how the portal compares to the platforms you already use.</p>
     </div>
 
-    <div class="reveal mt-14 overflow-x-auto rounded-2xl border border-white/10 bg-navy-800/40 p-2 sm:p-4">
+    <div class="reveal card mt-14 overflow-x-auto p-2 sm:p-4" data-delay="1">
       <table class="cmp min-w-[640px]">
         <thead>
           <tr>
@@ -246,8 +241,8 @@ $serverError = isset($_GET['error']);
             foreach ($rows as [$feat, $v, $e, $b]):
           ?>
           <tr>
-            <td class="font-medium text-white"><?= htmlspecialchars($feat, ENT_QUOTES, 'UTF-8') ?></td>
-            <td class="win-col font-semibold"><?= $cell($v) ?></td>
+            <td><?= htmlspecialchars($feat, ENT_QUOTES, 'UTF-8') ?></td>
+            <td class="win-col win-strong"><?= $cell($v) ?></td>
             <td><?= $cell($e) ?></td>
             <td><?= $cell($b) ?></td>
           </tr>
@@ -255,18 +250,18 @@ $serverError = isset($_GET['error']);
         </tbody>
       </table>
     </div>
-    <p class="reveal mt-5 text-center text-xs text-white/45">Comparison reflects typical member savings. Actual results vary by route, dates and availability.</p>
+    <p class="reveal mt-5 text-center text-xs text-ink-3">Comparison reflects typical member savings. Actual results vary by route, dates and availability.</p>
   </div>
 </section>
 
 <!-- =========================================================
-     SECTION 6 — TESTIMONIALS
+     SECTION 6 — TESTIMONIALS (light)
      ========================================================= -->
-<section class="bg-navy py-24 sm:py-28">
+<section class="sec-mist edge-top py-24 sm:py-28">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <div class="reveal mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight" style="text-wrap:balance;">Real members, real savings</h2>
-      <p class="mt-4 text-white/70">A few of the people who stopped overpaying after joining through Naomi.</p>
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Real members, real savings</h2>
+      <p class="lede mt-4 text-lg">A few of the people who stopped overpaying after joining through Naomi.</p>
     </div>
 
     <div class="mt-14 grid gap-7 md:grid-cols-3">
@@ -278,16 +273,16 @@ $serverError = isset($_GET['error']);
         ];
         foreach ($quotes as $i => [$text, $name, $place]):
       ?>
-      <figure class="reveal lift relative rounded-2xl border border-white/10 border-l-[3px] border-l-gold bg-navy-800/60 p-7 shadow-[0_20px_50px_-30px_rgba(0,0,0,.8)]" data-delay="<?= $i ?>">
-        <div class="mb-4 flex gap-1 text-gold" aria-label="5 out of 5 stars">
+      <figure class="reveal card lift quote p-8" data-delay="<?= $i ?>">
+        <div class="stars mb-4 flex gap-1" aria-label="5 out of 5 stars">
           <?php for ($s = 0; $s < 5; $s++): ?>
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.45 4.45a1 1 0 00.95.69h4.68c.97 0 1.37 1.24.59 1.81l-3.79 2.75a1 1 0 00-.36 1.12l1.45 4.45c.3.92-.76 1.69-1.54 1.12l-3.79-2.75a1 1 0 00-1.18 0l-3.79 2.75c-.78.57-1.84-.2-1.54-1.12l1.45-4.45a1 1 0 00-.36-1.12L1.33 9.88c-.78-.57-.38-1.81.59-1.81h4.68a1 1 0 00.95-.69L9.05 2.93z"/></svg>
           <?php endfor; ?>
         </div>
-        <blockquote class="text-[0.98rem] leading-relaxed text-white/85">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
-        <figcaption class="mt-6 border-t border-white/10 pt-4">
-          <span class="block font-semibold text-white"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
-          <span class="text-sm text-white/55"><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></span>
+        <blockquote class="relative z-10 leading-relaxed text-ink-2">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
+        <figcaption class="mt-6 border-t border-line pt-4">
+          <span class="block font-semibold text-ink"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
+          <span class="text-sm text-ink-3"><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></span>
         </figcaption>
       </figure>
       <?php endforeach; ?>
@@ -296,33 +291,31 @@ $serverError = isset($_GET['error']);
 </section>
 
 <!-- =========================================================
-     SECTION 7 — ABOUT NAOMI
+     SECTION 7 — ABOUT NAOMI (light)
      ========================================================= -->
-<section id="about" class="bg-navy-900 py-24 sm:py-28">
+<section id="about" class="sec-paper py-24 sm:py-28">
   <div class="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 md:grid-cols-2 md:gap-16">
-    <!-- Photo (assets/naomi.jpg). Fallback keeps the section intact before upload. -->
     <div class="reveal order-1 mx-auto w-full max-w-sm md:order-none">
-      <div class="glow-frame overflow-hidden rounded-3xl">
+      <div class="glow-frame overflow-hidden">
         <img
           src="assets/naomi.jpg"
           alt="Naomi Henry, your TravelWithNaomi Vortex365 ambassador"
           class="h-full w-full object-cover"
-          width="640" height="800"
-          loading="lazy"
+          width="640" height="800" loading="lazy"
           onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80';"
         >
       </div>
     </div>
 
     <div class="reveal" data-delay="1">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight">Hi, I'm Naomi Henry</h2>
-      <p class="mt-6 text-lg leading-relaxed text-white/80">
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink">Hi, I'm Naomi Henry</h2>
+      <p class="mt-6 text-lg leading-relaxed text-ink-2">
         I discovered Vortex365 and couldn't keep it to myself. Whether you travel for work,
         family or adventure, you deserve to stop overpaying. I'm here personally to help you
         get access and start saving today.
       </p>
-      <a href="<?= $wa ?>" class="btn-ghost mt-8 inline-flex items-center gap-2 px-7 py-3">
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.748-.985zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414z"/></svg>
+      <a href="<?= $wa ?>" class="btn btn-outline mt-8 px-7 py-3">
+        <svg class="h-5 w-5 text-gold-ink" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.748-.985zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414z"/></svg>
         Message Me Directly
       </a>
     </div>
@@ -330,9 +323,9 @@ $serverError = isset($_GET['error']);
 </section>
 
 <!-- =========================================================
-     SECTION 8 — LEAD CAPTURE FORM
+     SECTION 8 — LEAD CAPTURE FORM (drenched navy focal moment)
      ========================================================= -->
-<section id="get-started" class="bg-navy py-24 sm:py-28">
+<section id="get-started" class="sec-navy py-24 sm:py-28">
   <div class="mx-auto max-w-2xl px-5 sm:px-8">
     <form
       action="submit.php" method="post" novalidate
@@ -340,7 +333,7 @@ $serverError = isset($_GET['error']);
       class="reveal rounded-3xl border border-gold/45 bg-navy-800/70 p-7 shadow-[0_40px_90px_-40px_rgba(0,0,0,.9)] sm:p-10"
     >
       <div class="text-center">
-        <h2 class="font-display text-[clamp(1.8rem,5vw,2.6rem)] font-bold leading-tight">Get your free travel access now</h2>
+        <h2 class="font-display text-[clamp(1.8rem,5vw,2.6rem)] font-bold leading-tight text-white">Get your free travel access now</h2>
         <p class="mt-3 text-white/70">Fill in your details below and I will personally send you through to your members portal.</p>
       </div>
 
@@ -398,29 +391,30 @@ $serverError = isset($_GET['error']);
         </div>
       </div>
 
-      <button type="submit" class="btn-gold mt-8 w-full px-8 py-4 text-base sm:text-lg">
+      <button type="submit" class="btn btn-gold mt-8 w-full px-8 py-4 text-base sm:text-lg">
         Claim My Free Access
       </button>
-      <p class="mt-4 text-center text-xs text-white/50">No credit card required · Your details stay private · Takes 2 minutes</p>
+      <p class="mt-4 text-center text-xs text-white/55">No credit card required · Your details stay private · Takes 2 minutes</p>
     </form>
   </div>
 </section>
 
 <!-- =========================================================
-     SECTION 9 — FINAL CTA
+     SECTION 9 — FINAL CTA (drenched navy + photo)
      ========================================================= -->
-<section class="relative overflow-hidden bg-navy-900 py-28">
-  <div class="hero-bg absolute inset-0 opacity-90" aria-hidden="true"></div>
-  <div class="relative z-10 mx-auto max-w-3xl px-5 text-center sm:px-8">
+<section class="hero relative overflow-hidden py-28">
+  <div class="hero-photo" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80'); filter:grayscale(.1);" aria-hidden="true"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+  <div class="relative z-10 mx-auto max-w-3xl px-5 text-center text-white sm:px-8">
     <h2 class="reveal font-display text-[clamp(2.2rem,6vw,3.6rem)] font-bold leading-[1.08]" style="text-wrap:balance;">
       Your next trip should cost less. Start here.
     </h2>
-    <p class="reveal mx-auto mt-6 max-w-xl text-lg text-white/80" data-delay="1">
+    <p class="reveal mx-auto mt-6 max-w-xl text-lg text-white/85" data-delay="1">
       Join through my personal link and get instant access to the Vortex365 members portal, completely free.
     </p>
     <div class="reveal mt-9 flex flex-col items-center gap-4" data-delay="2">
-      <a href="<?= $ref ?>" class="btn-gold px-10 py-4 text-base sm:text-lg">Claim My Free Access Now</a>
-      <p class="text-sm text-white/55">Free to join · No credit card · Cancel anytime</p>
+      <a href="<?= $ref ?>" class="btn btn-gold px-10 py-4 text-base sm:text-lg">Claim My Free Access Now</a>
+      <p class="text-sm text-white/60">Free to join · No credit card · Cancel anytime</p>
     </div>
   </div>
 </section>
@@ -430,7 +424,7 @@ $serverError = isset($_GET['error']);
 <!-- =========================================================
      SECTION 10 — FOOTER
      ========================================================= -->
-<footer class="border-t border-white/10 bg-navy-900 py-14">
+<footer class="bg-navy-900 py-14 text-white">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <div class="flex flex-col items-center gap-8 md:flex-row md:items-start md:justify-between">
       <div class="text-center md:text-left">
@@ -496,7 +490,6 @@ $serverError = isset($_GET['error']);
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
     els.forEach(function (el) { io.observe(el); });
-    // Safety net: if anything is still hidden after load, reveal it.
     window.addEventListener('load', function () {
       setTimeout(function () {
         els.forEach(function (el) {
@@ -507,7 +500,7 @@ $serverError = isset($_GET['error']);
     });
   })();
 
-  /* ---- Count-up stat counters ---- */
+  /* ---- Count-up stat counters (ease-out-quart) ---- */
   (function () {
     var counters = document.querySelectorAll('.counter');
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -518,7 +511,7 @@ $serverError = isset($_GET['error']);
       function step(ts) {
         if (!start) start = ts;
         var p = Math.min((ts - start) / dur, 1);
-        var eased = 1 - Math.pow(1 - p, 4); // ease-out-quart
+        var eased = 1 - Math.pow(1 - p, 4);
         el.textContent = Math.floor(eased * target);
         if (p < 1) requestAnimationFrame(step); else el.textContent = target;
       }
@@ -534,26 +527,25 @@ $serverError = isset($_GET['error']);
   /* ---- Hero gold particles ---- */
   (function () {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var host = document.getElementById('particles');
-    if (!host) return;
-    var n = window.innerWidth < 640 ? 14 : 26;
-    for (var i = 0; i < n; i++) {
-      var p = document.createElement('i');
-      p.style.left = Math.random() * 100 + '%';
-      p.style.animationDuration = (8 + Math.random() * 10) + 's';
-      p.style.animationDelay = (Math.random() * 10) + 's';
-      var sz = 2 + Math.random() * 4;
-      p.style.width = sz + 'px'; p.style.height = sz + 'px';
-      host.appendChild(p);
-    }
+    document.querySelectorAll('.particles').forEach(function (host) {
+      var n = window.innerWidth < 640 ? 12 : 22;
+      for (var i = 0; i < n; i++) {
+        var p = document.createElement('i');
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (8 + Math.random() * 10) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        var sz = 2 + Math.random() * 4;
+        p.style.width = sz + 'px'; p.style.height = sz + 'px';
+        host.appendChild(p);
+      }
+    });
   })();
 
   /* ---- Alpine form component: real-time validation + overlay ---- */
   function leadForm() {
     return {
       f: { full_name: '', email: '', whatsapp: '', country: '', travel_interest: '' },
-      errs: {},
-      touched: {},
+      errs: {}, touched: {},
       rules: {
         full_name: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your full name.'; },
         email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? '' : 'Enter a valid email address.'; },
@@ -561,24 +553,16 @@ $serverError = isset($_GET['error']);
         country: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your country.'; },
         travel_interest: function (v) { return v ? '' : 'Please choose a travel interest.'; }
       },
-      validateField: function (k) {
-        this.errs[k] = this.rules[k](this.f[k]);
-        return !this.errs[k];
-      },
+      validateField: function (k) { this.errs[k] = this.rules[k](this.f[k]); return !this.errs[k]; },
       touch: function (k) { this.touched[k] = true; this.validateField(k); },
-      cls: function (k) {
-        if (!this.touched[k]) return '';
-        return this.errs[k] ? 'invalid' : 'valid';
-      },
+      cls: function (k) { if (!this.touched[k]) return ''; return this.errs[k] ? 'invalid' : 'valid'; },
       handle: function (ev) {
         var ok = true;
         for (var k in this.rules) { this.touched[k] = true; if (!this.validateField(k)) ok = false; }
         if (!ok) {
-          // Focus the first invalid field.
           for (var key in this.rules) { if (this.errs[key]) { var el = document.getElementById(key); if (el) el.focus(); break; } }
           return;
         }
-        // Show overlay, then submit so submit.php saves + redirects.
         document.getElementById('success-overlay').classList.add('show');
         setTimeout(function () { ev.target.submit(); }, 400);
       }
