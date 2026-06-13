@@ -187,15 +187,20 @@ $serverError = isset($_GET['error']);
 
     <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <?php
+        // [label, dropdown interest, photo id, alt, personalised heading, lead_source, url slug]
         $cats = [
-          ['Family Vacations', 'Family Vacation', '1542037104857-ffbb0b9155fb', 'A family walking together on holiday'],
-          ['Beach Getaways',   'Beach Getaway',   '1507525428034-b723cf961d3e', 'A sunlit tropical beach at golden hour'],
-          ['Cruises',          'Cruise',          '1599640842225-85d111c60e6b', 'A cruise ship moored beside a turquoise bay'],
-          ['Weekend Trips',    'Weekend Trip',    '1513635269975-59663e0ac1ad', 'Tower Bridge and the London skyline at dusk'],
+          ['Family Vacations', 'Family Vacation', '1542037104857-ffbb0b9155fb', 'A family walking together on holiday',     'Find Out How Much You Could Save on a Family Vacation', 'family-vacations-card', 'family-vacation'],
+          ['Beach Getaways',   'Beach Getaway',   '1507525428034-b723cf961d3e', 'A sunlit tropical beach at golden hour',   'Find Out How Much You Could Save on a Beach Getaway',   'beach-getaways-card',   'beach-getaway'],
+          ['Cruises',          'Cruise',          '1599640842225-85d111c60e6b', 'A cruise ship moored beside a turquoise bay','Find Out How Much You Could Save on a Cruise',         'cruises-card',          'cruise'],
+          ['Weekend Trips',    'Weekend Trip',    '1513635269975-59663e0ac1ad', 'Tower Bridge and the London skyline at dusk','Find Out How Much You Could Save on a Weekend Trip',   'weekend-trips-card',    'weekend-trip'],
         ];
-        foreach ($cats as $i => [$label, $interest, $pid, $alt]):
+        foreach ($cats as $i => [$label, $interest, $pid, $alt, $heading, $source, $slug]):
       ?>
-      <a href="#get-started" data-interest="<?= $interest ?>"
+      <a href="#get-started"
+         data-travel-interest="<?= htmlspecialchars($interest, ENT_QUOTES, 'UTF-8') ?>"
+         data-form-heading="<?= htmlspecialchars($heading, ENT_QUOTES, 'UTF-8') ?>"
+         data-lead-source="<?= $source ?>"
+         data-trip-slug="<?= $slug ?>"
          class="cat-card reveal lift" data-delay="<?= $i ?>"
          aria-label="<?= $label ?> — jump to sign-up">
         <div class="media">
@@ -225,17 +230,22 @@ $serverError = isset($_GET['error']);
 
     <div class="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
       <?php
+        // [name, description, dropdown interest, photo id, alt, personalised heading, lead_source, url slug]
         $trips = [
-          ['Orlando Family Vacation', 'Where family memories are made',          'Family Vacation',            '1597466599360-3b9775841aec', 'The Orlando theme-park castle under a blue sky'],
-          ['Caribbean Cruise',        'Sun, sea, and savings on the open water', 'Cruise',                     '1548574505-5e239809ee19',   'Cruise ships docked at a turquoise Caribbean port'],
-          ['Las Vegas Weekend',       'The ultimate long weekend escape',        'Weekend Trip',               '1581351721010-8cf859cb14a4', 'The Las Vegas Strip lit up at night'],
-          ['Cancun Beach Getaway',    'White sand, clear water, member pricing', 'Beach Getaway',              '1519046904884-53103b34b206', 'Palm trees on a white-sand Cancun beach'],
-          ['New York City Break',     'The city that never stops surprising you','City Break',                 '1485871981521-5b1fd3805eee', 'The Manhattan skyline at golden hour'],
-          ['Visiting Family Overseas','Getting there should not cost a fortune',  'Visiting Family or Friends', '1436491865332-7a61a109cc05', 'An aeroplane wing above the clouds'],
+          ['Orlando Family Vacation', 'Where family memories are made',          'Family Vacation',            '1597466599360-3b9775841aec', 'The Orlando theme-park castle under a blue sky',     'Find Out How Much You Could Save on an Orlando Family Vacation', 'orlando-family-card',   'orlando-family'],
+          ['Caribbean Cruise',        'Sun, sea, and savings on the open water', 'Cruise',                     '1548574505-5e239809ee19',   'Cruise ships docked at a turquoise Caribbean port',  'Find Out How Much You Could Save on a Caribbean Cruise',         'caribbean-cruise-card', 'caribbean-cruise'],
+          ['Las Vegas Weekend',       'The ultimate long weekend escape',        'Weekend Trip',               '1581351721010-8cf859cb14a4', 'The Las Vegas Strip lit up at night',                'Find Out How Much You Could Save on a Las Vegas Weekend',        'las-vegas-card',        'las-vegas'],
+          ['Cancun Beach Getaway',    'White sand, clear water, member pricing', 'Beach Getaway',              '1519046904884-53103b34b206', 'Palm trees on a white-sand Cancun beach',            'Find Out How Much You Could Save on a Cancun Beach Getaway',     'cancun-beach-card',     'cancun'],
+          ['New York City Break',     'The city that never stops surprising you','City Break',                 '1485871981521-5b1fd3805eee', 'The Manhattan skyline at golden hour',               'Find Out How Much You Could Save on a New York City Break',      'new-york-card',         'new-york'],
+          ['Visiting Family Overseas','Getting there should not cost a fortune',  'Visiting Family or Friends', '1436491865332-7a61a109cc05', 'An aeroplane wing above the clouds',                 'Find Out How Much You Could Save on Your Next Visit Home',       'visiting-family-card',  'visiting-family'],
         ];
-        foreach ($trips as $i => [$name, $desc, $interest, $pid, $alt]):
+        foreach ($trips as $i => [$name, $desc, $interest, $pid, $alt, $heading, $source, $slug]):
       ?>
-      <a href="#get-started" data-interest="<?= $interest ?>"
+      <a href="#get-started"
+         data-travel-interest="<?= htmlspecialchars($interest, ENT_QUOTES, 'UTF-8') ?>"
+         data-form-heading="<?= htmlspecialchars($heading, ENT_QUOTES, 'UTF-8') ?>"
+         data-lead-source="<?= $source ?>"
+         data-trip-slug="<?= $slug ?>"
          class="trip-card card reveal lift" data-delay="<?= $i % 3 ?>">
         <div class="media">
           <img src="https://images.unsplash.com/photo-<?= $pid ?>?auto=format&fit=crop&w=900&q=80"
@@ -277,6 +287,56 @@ $serverError = isset($_GET['error']);
         <p class="mx-auto mt-3 max-w-xs leading-relaxed text-ink-2"><?= $desc ?></p>
       </div>
       <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 4b — WHAT YOU CAN BOOK (drenched navy, icon cards)
+     ========================================================= -->
+<section id="booking" class="sec-navy py-24 sm:py-28">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-white" style="text-wrap:balance;">Everything you can book through the portal</h2>
+      <p class="mt-4 text-lg text-white/70">One membership, your whole trip covered. Tap a category to get started.</p>
+    </div>
+
+    <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <?php
+        // [label, interest, heading, lead_source, slug, icon-paths, caption]
+        $booking = [
+          ['Hotels and Resorts', 'All of the Above', 'Find Out How Much You Could Save on Hotels and Resorts', 'hotels-resorts-card', 'hotels-resorts',
+            'M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M10 9h.01M14 9h.01M10 13h.01M14 13h.01M10 17h4', 'Member rates on stays worldwide.'],
+          ['Cruises', 'Cruise', 'Find Out How Much You Could Save on a Cruise', 'cruises-booking-card', 'cruise',
+            'M12 3v6M5 9h14l-1.5 6H6.5L5 9zM4 19c1.4 1 2.9 1 4 0s2.6-1 4 0 2.9 1 4 0 2.6-1 4 0', 'Sail for less than the cruise lines quote.'],
+          ['Family Vacations', 'Family Vacation', 'Find Out How Much You Could Save on a Family Vacation', 'family-booking-card', 'family-vacation',
+            'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', 'Bigger trips, smaller bills.'],
+          ['Weekend Getaways', 'Weekend Trip', 'Find Out How Much You Could Save on a Weekend Getaway', 'weekend-booking-card', 'weekend-trip',
+            'M6 7h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M10 12v4M14 12v4', "Quick escapes that don't break the bank."],
+          ['Car Rentals', 'All of the Above', 'Find Out How Much You Could Save on Car Rentals', 'car-rentals-card', 'car-rentals',
+            'M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13M5 13h14v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1M5 13v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1M7.5 16h.01M16.5 16h.01', 'Wheels at the destination for less.'],
+        ];
+        foreach ($booking as $i => [$label, $interest, $heading, $source, $slug, $icon, $caption]):
+      ?>
+      <a href="#get-started"
+         data-travel-interest="<?= htmlspecialchars($interest, ENT_QUOTES, 'UTF-8') ?>"
+         data-form-heading="<?= htmlspecialchars($heading, ENT_QUOTES, 'UTF-8') ?>"
+         data-lead-source="<?= $source ?>"
+         data-trip-slug="<?= $slug ?>"
+         class="book-card is-link reveal" data-delay="<?= $i % 3 ?>"
+         aria-label="<?= $label ?> — jump to sign-up">
+        <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="<?= $icon ?>"/></svg></span>
+        <h3><?= $label ?></h3>
+        <p><?= $caption ?></p>
+      </a>
+      <?php endforeach; ?>
+
+      <!-- Personal Support: informational, NOT clickable (no mapping, no pointer) -->
+      <div class="book-card no-link reveal" data-delay="2">
+        <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2zM20 14a2 2 0 0 0-2-2h-1v5h1a2 2 0 0 0 2-2zM18 17v1a3 3 0 0 1-3 3h-3"/></svg></span>
+        <h3>Personal Support</h3>
+        <p>Naomi is on hand to help you book every step of the way.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -410,7 +470,7 @@ $serverError = isset($_GET['error']);
       class="reveal rounded-3xl border border-gold/45 bg-navy-800/70 p-7 shadow-[0_40px_90px_-40px_rgba(0,0,0,.9)] sm:p-10"
     >
       <div class="text-center">
-        <h2 class="font-display text-[clamp(1.8rem,5vw,2.6rem)] font-bold leading-tight text-white">Get your free travel access now</h2>
+        <h2 id="form-heading" class="font-display text-[clamp(1.8rem,5vw,2.6rem)] font-bold leading-tight text-white">Get your free travel access now</h2>
         <p class="mt-3 text-white/70">Fill in your details below and I will personally send you through to your members portal.</p>
       </div>
 
@@ -419,6 +479,16 @@ $serverError = isset($_GET['error']);
           Something looked off with your details. Please check and try again.
         </p>
       <?php endif; ?>
+
+      <!-- Tracking fields. lead_source defaults to "direct-form" and is updated
+           by selectTravelIntent() on any card click. UTM fields are filled on
+           page load from sessionStorage (see scripts at the foot of the page). -->
+      <input type="hidden" name="lead_source" id="lead_source" value="direct-form">
+      <input type="hidden" name="utm_source"   id="utm_source">
+      <input type="hidden" name="utm_medium"   id="utm_medium">
+      <input type="hidden" name="utm_campaign" id="utm_campaign">
+      <input type="hidden" name="utm_content"  id="utm_content">
+      <input type="hidden" name="utm_term"     id="utm_term">
 
       <div class="mt-8 grid gap-5">
         <div>
@@ -622,17 +692,138 @@ $serverError = isset($_GET['error']);
     });
   })();
 
-  /* ---- Category / trip cards pre-select the matching interest ---- */
+  /* ---- Smart intent capture: lead source + UTM + dual-URL pre-fill ---- */
   (function () {
-    document.querySelectorAll('[data-interest]').forEach(function (el) {
-      el.addEventListener('click', function () {
-        var sel = document.getElementById('travel_interest');
-        if (!sel) return;
-        sel.value = el.getAttribute('data-interest');
-        // Notify Alpine's x-model (it listens for `change` on selects).
-        sel.dispatchEvent(new Event('change', { bubbles: true }));
+    // Slug → { interest, heading } for ?trip= and #hash pre-fill.
+    var TRIP_MAP = {
+      'family-vacation': { interest: 'Family Vacation',            heading: null },
+      'beach-getaway':   { interest: 'Beach Getaway',             heading: null },
+      'cruise':          { interest: 'Cruise',                    heading: null },
+      'caribbean-cruise':{ interest: 'Cruise',                    heading: 'Find Out How Much You Could Save on a Caribbean Cruise' },
+      'orlando-family':  { interest: 'Family Vacation',            heading: 'Find Out How Much You Could Save on an Orlando Family Vacation' },
+      'las-vegas':       { interest: 'Weekend Trip',              heading: 'Find Out How Much You Could Save on a Las Vegas Weekend' },
+      'cancun':          { interest: 'Beach Getaway',             heading: 'Find Out How Much You Could Save on a Cancun Beach Getaway' },
+      'new-york':        { interest: 'City Break',                heading: 'Find Out How Much You Could Save on a New York City Break' },
+      'visiting-family': { interest: 'Visiting Family or Friends', heading: 'Find Out How Much You Could Save on Your Next Visit Home' },
+      'weekend-trip':    { interest: 'Weekend Trip',              heading: null },
+      'city-break':      { interest: 'City Break',                heading: null },
+      'hotels-resorts':  { interest: 'All of the Above',           heading: 'Find Out How Much You Could Save on Hotels and Resorts' },
+      'car-rentals':     { interest: 'All of the Above',           heading: 'Find Out How Much You Could Save on Car Rentals' }
+    };
+
+    var prefersFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var reduce      = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setInterest(value) {
+      var sel = document.getElementById('travel_interest');
+      if (!sel || !value) return;
+      var exists = Array.prototype.some.call(sel.options, function (o) { return o.value === value; });
+      if (!exists) return;
+      sel.value = value;
+      sel.dispatchEvent(new Event('change', { bubbles: true })); // keep Alpine x-model in sync
+    }
+
+    function pulseDropdown() {
+      var sel = document.getElementById('travel_interest');
+      if (!sel || reduce) return;
+      sel.classList.remove('pulse-gold');
+      void sel.offsetWidth; // restart the animation cleanly on re-click
+      sel.classList.add('pulse-gold');
+      sel.addEventListener('animationend', function h() {
+        sel.classList.remove('pulse-gold');
+        sel.removeEventListener('animationend', h);
+      });
+    }
+
+    function setHeading(text, animate) {
+      var h = document.getElementById('form-heading');
+      if (!h || !text) return;
+      if (!animate || reduce) { h.textContent = text; return; }
+      h.style.opacity = '0';
+      setTimeout(function () { h.textContent = text; h.style.opacity = '1'; }, 200);
+    }
+
+    // Stateless + re-entrant: every call produces a fresh pre-fill.
+    function selectTravelIntent(interest, heading, leadSource, slug) {
+      setInterest(interest);
+
+      var src = document.getElementById('lead_source');
+      if (src && leadSource) src.value = leadSource;
+
+      setHeading(heading, true);
+      pulseDropdown();
+
+      // Update the URL with BOTH ?trip= and #hash, without jumping.
+      if (slug) {
+        try {
+          var u = new URL(window.location.href);
+          u.searchParams.set('trip', slug);
+          u.hash = slug;
+          history.replaceState(null, '', u.toString());
+        } catch (e) {}
+      }
+
+      // Smooth scroll to the form.
+      var form = document.getElementById('get-started');
+      if (form) form.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+      // Desktop with a fine pointer only: focus Full Name once the scroll settles.
+      // On touch devices, let the visitor tap — no auto-focus.
+      if (prefersFine) {
+        setTimeout(function () {
+          var n = document.getElementById('full_name');
+          if (n) n.focus({ preventScroll: true });
+        }, reduce ? 0 : 700);
+      }
+    }
+    window.selectTravelIntent = selectTravelIntent;
+
+    // Wire every clickable card (destination, popular trips, booking categories).
+    document.querySelectorAll('[data-travel-interest]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault();
+        selectTravelIntent(
+          card.getAttribute('data-travel-interest'),
+          card.getAttribute('data-form-heading'),
+          card.getAttribute('data-lead-source'),
+          card.getAttribute('data-trip-slug')
+        );
       });
     });
+
+    // --- UTM capture: persist to sessionStorage, populate hidden fields ---
+    (function () {
+      var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      var params = new URLSearchParams(window.location.search);
+      keys.forEach(function (k) {
+        var v = params.get(k);
+        if (v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+        var stored = null;
+        try { stored = sessionStorage.getItem(k); } catch (e) {}
+        var field = document.getElementById(k);
+        if (field && stored) field.value = stored;
+      });
+    })();
+
+    // --- Dual-URL pre-fill (?trip= first, else #hash). Silent: dropdown + heading only.
+    // Runs after Alpine initialises so x-model doesn't reset the <select>.
+    function applyUrlPrefill() {
+      var params = new URLSearchParams(window.location.search);
+      var slug = params.get('trip');
+      if (!slug && window.location.hash) slug = window.location.hash.replace(/^#/, '');
+      if (!slug) return;
+      var map = TRIP_MAP[slug.toLowerCase()];
+      if (!map) return;
+      setInterest(map.interest);
+      if (map.heading) setHeading(map.heading, false);
+    }
+    if (window.Alpine) {
+      applyUrlPrefill();
+    } else {
+      document.addEventListener('alpine:initialized', applyUrlPrefill, { once: true });
+      // Fallback if Alpine never loads.
+      window.addEventListener('load', function () { setTimeout(applyUrlPrefill, 300); });
+    }
   })();
 
   /* ---- Alpine form component: real-time validation + overlay ---- */

@@ -39,6 +39,7 @@ $totalLeads  = 0;
 $totalClicks = 0;
 $last7       = 0;
 $leads       = [];
+$sources     = [];
 $dbDown      = !($pdo instanceof PDO);
 
 if (!$dbDown) {
@@ -49,8 +50,14 @@ if (!$dbDown) {
             'SELECT COUNT(*) FROM leads WHERE created_at >= (NOW() - INTERVAL 7 DAY)'
         )->fetchColumn();
         $leads = $pdo->query(
-            'SELECT full_name, email, whatsapp, country, travel_interest, created_at
+            'SELECT full_name, email, whatsapp, country, travel_interest, lead_source,
+                    utm_source, utm_medium, utm_campaign, utm_content, utm_term, created_at
              FROM leads ORDER BY created_at DESC'
+        )->fetchAll();
+        // Breakdown of leads by source (highest first).
+        $sources = $pdo->query(
+            "SELECT COALESCE(NULLIF(lead_source, ''), 'direct-form') AS src, COUNT(*) AS n
+             FROM leads GROUP BY src ORDER BY n DESC"
         )->fetchAll();
     } catch (PDOException $e) {
         error_log('[TravelWithNaomi] Dashboard query failed: ' . $e->getMessage());
@@ -65,7 +72,10 @@ if (isset($_GET['export']) && !$dbDown) {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="travelwithnaomi-leads-' . date('Y-m-d') . '.csv"');
     $out = fopen('php://output', 'w');
-    fputcsv($out, ['Name', 'Email', 'WhatsApp', 'Country', 'Travel Interest', 'Date Joined']);
+    fputcsv($out, [
+        'Name', 'Email', 'WhatsApp', 'Country', 'Travel Interest', 'Lead Source',
+        'UTM Source', 'UTM Medium', 'UTM Campaign', 'UTM Content', 'UTM Term', 'Date Joined',
+    ]);
     foreach ($leads as $row) {
         fputcsv($out, [
             $row['full_name'],
@@ -73,6 +83,12 @@ if (isset($_GET['export']) && !$dbDown) {
             $row['whatsapp'],
             $row['country'],
             $row['travel_interest'],
+            $row['lead_source'] ?? 'direct-form',
+            $row['utm_source'] ?? '',
+            $row['utm_medium'] ?? '',
+            $row['utm_campaign'] ?? '',
+            $row['utm_content'] ?? '',
+            $row['utm_term'] ?? '',
             $row['created_at'],
         ]);
     }
@@ -173,9 +189,25 @@ $adminUser = htmlspecialchars($_SESSION['admin_user'] ?? 'Admin', ENT_QUOTES, 'U
     .empty, .nores { padding: 40px 22px; text-align: center; color: #8b93ad; }
     .nores { display: none; }
 
+    /* Lead sources breakdown */
+    .src-grid { padding: 18px 22px; display: grid; gap: 12px; }
+    .src-row { display: grid; grid-template-columns: minmax(120px, 200px) 1fr auto; align-items: center; gap: 14px; }
+    .src-name { font-size: .86rem; color: #d6dbec; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .src-bar { height: 8px; border-radius: 5px; background: rgba(255,255,255,.07); overflow: hidden; }
+    .src-fill { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--gold-light), var(--gold)); }
+    .src-count { font-size: .85rem; font-weight: 700; color: #fff; white-space: nowrap; }
+    .src-pct { font-weight: 500; color: var(--gold); margin-left: 4px; }
+    .src-pill {
+      display: inline-block; padding: 3px 9px; border-radius: 999px;
+      font-size: .74rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--gold); background: rgba(201,168,76,.12); border: 1px solid rgba(201,168,76,.25);
+    }
+
     @media (max-width: 560px) {
       .panel-head { flex-direction: column; align-items: stretch; }
       #search { min-width: 0; width: 100%; }
+      .src-row { grid-template-columns: 1fr auto; }
+      .src-bar { display: none; }
     }
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
   </style>
@@ -203,6 +235,25 @@ $adminUser = htmlspecialchars($_SESSION['admin_user'] ?? 'Admin', ENT_QUOTES, 'U
         <div class="stat"><div class="num"><?= number_format($last7) ?></div><div class="lbl">New leads (last 7 days)</div></div>
       </section>
 
+      <!-- Lead Sources breakdown -->
+      <section class="panel" style="margin-bottom:34px;">
+        <div class="panel-head"><h2>Lead sources</h2><span style="font-size:.8rem;color:#8b93ad;">Where your leads came from</span></div>
+        <?php if (!$sources): ?>
+          <div class="empty">No leads yet — sources will appear here as they arrive.</div>
+        <?php else: ?>
+          <div class="src-grid">
+            <?php foreach ($sources as $s):
+              $pct = $totalLeads > 0 ? round(($s['n'] / $totalLeads) * 100) : 0; ?>
+            <div class="src-row">
+              <span class="src-name"><?= htmlspecialchars($s['src'], ENT_QUOTES, 'UTF-8') ?></span>
+              <span class="src-bar"><span class="src-fill" style="width:<?= max(4, $pct) ?>%"></span></span>
+              <span class="src-count"><?= number_format((int) $s['n']) ?> <span class="src-pct"><?= $pct ?>%</span></span>
+            </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </section>
+
       <section class="panel">
         <div class="panel-head">
           <h2>Leads</h2>
@@ -217,12 +268,12 @@ $adminUser = htmlspecialchars($_SESSION['admin_user'] ?? 'Admin', ENT_QUOTES, 'U
             <thead>
               <tr>
                 <th>Name</th><th>Email</th><th>WhatsApp</th>
-                <th>Country</th><th>Travel Interest</th><th>Date Joined</th>
+                <th>Country</th><th>Travel Interest</th><th>Lead Source</th><th>Date Joined</th>
               </tr>
             </thead>
             <tbody>
               <?php if (!$leads): ?>
-                <tr class="no-filter"><td colspan="6" class="empty">No leads captured yet. They will appear here the moment your first visitor signs up.</td></tr>
+                <tr class="no-filter"><td colspan="7" class="empty">No leads captured yet. They will appear here the moment your first visitor signs up.</td></tr>
               <?php else: foreach ($leads as $row): ?>
                 <tr>
                   <td><?= htmlspecialchars($row['full_name'], ENT_QUOTES, 'UTF-8') ?></td>
@@ -230,6 +281,7 @@ $adminUser = htmlspecialchars($_SESSION['admin_user'] ?? 'Admin', ENT_QUOTES, 'U
                   <td><?= htmlspecialchars($row['whatsapp'], ENT_QUOTES, 'UTF-8') ?></td>
                   <td><?= htmlspecialchars($row['country'], ENT_QUOTES, 'UTF-8') ?></td>
                   <td><?= htmlspecialchars($row['travel_interest'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td><span class="src-pill"><?= htmlspecialchars($row['lead_source'] ?? 'direct-form', ENT_QUOTES, 'UTF-8') ?></span></td>
                   <td><?= htmlspecialchars(date('M j, Y · H:i', strtotime($row['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
                 </tr>
               <?php endforeach; endif; ?>

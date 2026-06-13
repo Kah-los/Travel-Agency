@@ -198,9 +198,57 @@ body {
   .cat-card:hover .media img,
   .trip-card:hover .media img { transform: scale(1.07); }
   .cat-card:hover .media .label .tag { width: 46px; }
-  .cat-card:active, .trip-card:active { transform: scale(0.99); }
+  /* Gold ring on hover signals the whole card is pressable */
+  .cat-card:hover { box-shadow: 0 0 0 2px rgba(201,168,76,.65), var(--shadow-lg); }
+  .trip-card:hover { box-shadow: 0 0 0 2px rgba(201,168,76,.65), var(--shadow-lg); }
 }
-.cat-card, .trip-card { transition: transform 160ms var(--ease-out), box-shadow .35s var(--ease-out); }
+.cat-card:active, .trip-card:active { transform: scale(0.985); }   /* immediate press feedback (all pointers) */
+.cat-card, .trip-card { cursor: pointer; transition: transform 140ms var(--ease-out), box-shadow .35s var(--ease-out); }
+
+/* -------------------------------------------------------------
+   Booking category cards (icon-led, navy section). A different
+   treatment from the photo cards on purpose (no identical grids).
+   ------------------------------------------------------------- */
+.book-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .85rem;
+  padding: 1.6rem 1.5rem; border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.10);
+  text-decoration: none;
+  transition: transform 140ms var(--ease-out), box-shadow .3s var(--ease-out),
+              border-color .25s ease, background-color .25s ease;
+}
+.book-card .ic {
+  width: 48px; height: 48px; border-radius: 13px; display: grid; place-items: center;
+  color: var(--gold); background: rgba(201,168,76,.14); border: 1px solid rgba(201,168,76,.30);
+}
+.book-card h3 { font-family: 'Playfair Display', serif; font-size: 1.18rem; font-weight: 600; color: #fff; }
+.book-card p  { font-size: .9rem; line-height: 1.55; color: rgba(255,255,255,.66); }
+.book-card.is-link { cursor: pointer; }
+@media (hover: hover) and (pointer: fine) {
+  .book-card.is-link:hover {
+    transform: translateY(-4px);
+    border-color: rgba(201,168,76,.6);
+    background: rgba(255,255,255,.07);
+    box-shadow: 0 22px 46px -22px rgba(0,0,0,.7);
+  }
+}
+.book-card.is-link:active { transform: scale(.985); }
+.book-card.no-link {
+  background: linear-gradient(160deg, rgba(201,168,76,.16), rgba(201,168,76,.05));
+  border-color: rgba(201,168,76,.40);
+}
+.book-card.no-link .ic { background: rgba(201,168,76,.20); }
+
+/* -------------------------------------------------------------
+   Form heading fade (card click swaps it) + dropdown gold pulse
+   ------------------------------------------------------------- */
+#form-heading { transition: opacity .25s var(--ease-out); }
+@keyframes goldpulse {
+  0%   { box-shadow: 0 0 0 0 rgba(201,168,76,.55); }
+  100% { box-shadow: 0 0 0 12px rgba(201,168,76,0); }
+}
+.pulse-gold { animation: goldpulse .7s var(--ease-out) 1; }
 
 /* Eyebrow used ONCE deliberately (hero), not as section grammar */
 .kicker {
@@ -372,7 +420,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .js .reveal { opacity: 1 !important; transform: none !important; transition: opacity .3s ease !important; }
-  .float-words span, .particles i, .btn-gold::after, .overlay .ring { animation: none !important; }
-  .btn:active { transform: none; }
+  .float-words span, .particles i, .btn-gold::after, .overlay .ring, .pulse-gold { animation: none !important; }
+  #form-heading { transition: none !important; }
+  .btn:active, .cat-card:active, .trip-card:active, .book-card.is-link:active { transform: none; }
   .lift:hover, .btn-gold:hover, .btn-ghost:hover, .btn-outline:hover { transform: none; }
 }

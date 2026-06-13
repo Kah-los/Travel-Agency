@@ -60,6 +60,20 @@ $whatsapp = clean('whatsapp');
 $country  = clean('country');
 $interest = clean('travel_interest');
 
+// ---- Tracking fields (lead source + UTM) ----
+// lead_source is a slug; keep only safe characters and fall back to 'direct-form'.
+$leadSource = strtolower(clean('lead_source'));
+$leadSource = preg_replace('/[^a-z0-9\-]/', '', $leadSource);
+if ($leadSource === '' || mb_strlen($leadSource) > 100) {
+    $leadSource = 'direct-form';
+}
+// UTM values: sanitised, capped at 100 chars, null when absent.
+$utm = [];
+foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as $k) {
+    $v = clean($k);
+    $utm[$k] = ($v === '') ? null : mb_substr($v, 0, 100);
+}
+
 // Must mirror the <select> options in index.php, or valid submissions are rejected.
 $allowedInterests = [
     'Family Vacation',
@@ -106,8 +120,12 @@ $pdo = db();
 if ($pdo instanceof PDO) {
     try {
         $stmt = $pdo->prepare(
-            'INSERT INTO leads (full_name, email, whatsapp, country, travel_interest, ip_address)
-             VALUES (:full_name, :email, :whatsapp, :country, :travel_interest, :ip)'
+            'INSERT INTO leads
+                (full_name, email, whatsapp, country, travel_interest,
+                 lead_source, utm_source, utm_medium, utm_campaign, utm_content, utm_term, ip_address)
+             VALUES
+                (:full_name, :email, :whatsapp, :country, :travel_interest,
+                 :lead_source, :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term, :ip)'
         );
         $stmt->execute([
             ':full_name'       => $fullName,
@@ -115,6 +133,12 @@ if ($pdo instanceof PDO) {
             ':whatsapp'        => $whatsapp,
             ':country'         => $country,
             ':travel_interest' => $interest,
+            ':lead_source'     => $leadSource,
+            ':utm_source'      => $utm['utm_source'],
+            ':utm_medium'      => $utm['utm_medium'],
+            ':utm_campaign'    => $utm['utm_campaign'],
+            ':utm_content'     => $utm['utm_content'],
+            ':utm_term'        => $utm['utm_term'],
             ':ip'              => $ip,
         ]);
 
