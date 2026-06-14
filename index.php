@@ -185,7 +185,7 @@ $serverError = isset($_GET['error']);
       <p class="lede mt-4 text-lg">Pick the kind of trip you have in mind. Member pricing covers them all.</p>
     </div>
 
-    <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
       <?php
         // [label, dropdown interest, photo id, alt, personalised heading, lead_source, url slug]
         $cats = [
@@ -272,7 +272,7 @@ $serverError = isset($_GET['error']);
       <p class="mt-4 text-lg text-white/70">One membership, your whole trip covered. Tap a category to get started.</p>
     </div>
 
-    <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
       <?php
         // [label, interest, heading, lead_source, slug, icon-paths, caption]
         $booking = [
