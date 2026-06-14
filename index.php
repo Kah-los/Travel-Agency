@@ -460,93 +460,16 @@ $serverError = isset($_GET['error']);
 </section>
 
 <!-- =========================================================
-     SECTION 8 — LEAD CAPTURE FORM (drenched navy focal moment)
+     SECTION 8 — LEAD CAPTURE CTA (compact card → opens modal)
      ========================================================= -->
-<section id="get-started" class="sec-navy py-24 sm:py-28">
-  <div class="mx-auto max-w-2xl px-5 sm:px-8">
-    <form
-      action="submit.php" method="post" novalidate
-      x-data="leadForm()" @submit.prevent="handle($event)"
-      class="reveal rounded-3xl border border-gold/45 bg-navy-800/70 p-7 shadow-[0_40px_90px_-40px_rgba(0,0,0,.9)] sm:p-10"
-    >
-      <div class="text-center">
-        <h2 id="form-heading" class="font-display text-[clamp(1.8rem,5vw,2.6rem)] font-bold leading-tight text-white">Get your free travel access now</h2>
-        <p class="mt-3 text-white/70">Fill in your details below and I will personally send you through to your members portal.</p>
-      </div>
-
-      <?php if ($serverError): ?>
-        <p class="mt-6 rounded-xl border border-red-400/50 bg-red-500/15 px-4 py-3 text-center text-sm text-red-200">
-          Something looked off with your details. Please check and try again.
-        </p>
-      <?php endif; ?>
-
-      <!-- Tracking fields. lead_source defaults to "direct-form" and is updated
-           by selectTravelIntent() on any card click. UTM fields are filled on
-           page load from sessionStorage (see scripts at the foot of the page). -->
-      <input type="hidden" name="lead_source" id="lead_source" value="direct-form">
-      <input type="hidden" name="utm_source"   id="utm_source">
-      <input type="hidden" name="utm_medium"   id="utm_medium">
-      <input type="hidden" name="utm_campaign" id="utm_campaign">
-      <input type="hidden" name="utm_content"  id="utm_content">
-      <input type="hidden" name="utm_term"     id="utm_term">
-
-      <div class="mt-8 grid gap-5">
-        <div>
-          <label for="full_name" class="mb-1.5 block text-sm font-medium text-white/80">Full name</label>
-          <input id="full_name" name="full_name" type="text" autocomplete="name"
-                 class="input-base" placeholder="Jane Doe"
-                 x-model="f.full_name" @blur="touch('full_name')" :class="cls('full_name')">
-          <p class="field-msg" x-text="errs.full_name"></p>
-        </div>
-
-        <div>
-          <label for="email" class="mb-1.5 block text-sm font-medium text-white/80">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="email"
-                 class="input-base" placeholder="jane@email.com"
-                 x-model="f.email" @blur="touch('email')" :class="cls('email')">
-          <p class="field-msg" x-text="errs.email"></p>
-        </div>
-
-        <div>
-          <label for="whatsapp" class="mb-1.5 block text-sm font-medium text-white/80">WhatsApp number</label>
-          <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel"
-                 class="input-base" placeholder="+1 555 123 4567"
-                 x-model="f.whatsapp" @blur="touch('whatsapp')" :class="cls('whatsapp')">
-          <p class="field-msg" x-text="errs.whatsapp"></p>
-        </div>
-
-        <div>
-          <label for="country" class="mb-1.5 block text-sm font-medium text-white/80">Country</label>
-          <input id="country" name="country" type="text" autocomplete="country-name"
-                 class="input-base" placeholder="United States"
-                 x-model="f.country" @blur="touch('country')" :class="cls('country')">
-          <p class="field-msg" x-text="errs.country"></p>
-        </div>
-
-        <div>
-          <label for="travel_interest" class="mb-1.5 block text-sm font-medium text-white/80">Travel interest</label>
-          <select id="travel_interest" name="travel_interest"
-                  class="input-base appearance-none" x-model="f.travel_interest"
-                  @change="touch('travel_interest')" :class="cls('travel_interest')">
-            <option value="" disabled>Choose one…</option>
-            <option value="Family Vacation">Family Vacation</option>
-            <option value="Beach Getaway">Beach Getaway</option>
-            <option value="Cruise">Cruise</option>
-            <option value="City Break">City Break</option>
-            <option value="Weekend Trip">Weekend Trip</option>
-            <option value="Honeymoon or Anniversary">Honeymoon or Anniversary</option>
-            <option value="Visiting Family or Friends">Visiting Family or Friends</option>
-            <option value="All of the Above">All of the Above</option>
-          </select>
-          <p class="field-msg" x-text="errs.travel_interest"></p>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-gold mt-8 w-full px-8 py-4 text-base sm:text-lg">
-        Claim My Free Access
-      </button>
-      <p class="mt-4 text-center text-xs text-white/55">No credit card required · Your details stay private · Takes 2 minutes</p>
-    </form>
+<section id="get-started" class="sec-navy py-20 sm:py-24">
+  <div class="mx-auto max-w-xl px-5 sm:px-8">
+    <div class="reveal rounded-3xl border border-gold/40 bg-navy-800/70 px-7 py-10 text-center shadow-[0_40px_90px_-40px_rgba(0,0,0,.9)] sm:px-12 sm:py-12">
+      <h2 class="font-display text-[clamp(1.8rem,4.5vw,2.6rem)] font-bold leading-tight text-white" style="text-wrap:balance;">Find Out How Much You Could Save</h2>
+      <p class="mx-auto mt-3 max-w-md text-white/70">Tell me where you want to go and see how member pricing could make your next trip more affordable.</p>
+      <button type="button" data-open-modal class="btn btn-gold mt-7 px-9 py-4 text-base sm:text-lg">Get My Free Access</button>
+      <p class="mt-4 text-xs text-white/55">Free to join · No credit card required · Takes 2 minutes</p>
+    </div>
   </div>
 </section>
 
@@ -591,6 +514,103 @@ $serverError = isset($_GET['error']);
     </div>
   </div>
 </footer>
+
+<!-- =========================================================
+     LEAD CAPTURE MODAL (holds the real form; opened by the CTA
+     and every mapped card via selectTravelIntent / openModal)
+     ========================================================= -->
+<div class="modal" id="lead-modal" role="dialog" aria-modal="true" aria-labelledby="form-heading">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-dialog" role="document">
+    <button type="button" class="modal-close" data-close-modal aria-label="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <form
+      action="submit.php" method="post" novalidate
+      x-data="leadForm()" @submit.prevent="handle($event)"
+    >
+      <div class="text-center">
+        <h2 id="form-heading" class="font-display text-[clamp(1.6rem,4.5vw,2.3rem)] font-bold leading-tight text-white" style="text-wrap:balance;">Find Out How Much You Could Save</h2>
+        <p class="mt-3 text-sm text-white/70 sm:text-base">Fill in your details below and I will personally send you through to your members portal.</p>
+      </div>
+
+      <?php if ($serverError): ?>
+        <p id="server-error" class="mt-6 rounded-xl border border-red-400/50 bg-red-500/15 px-4 py-3 text-center text-sm text-red-200">
+          Something looked off with your details. Please check and try again.
+        </p>
+      <?php endif; ?>
+
+      <!-- Tracking fields. lead_source defaults to "direct-form" and is updated
+           by selectTravelIntent() on any card click. UTM fields are filled on
+           page load from sessionStorage (see scripts at the foot of the page). -->
+      <input type="hidden" name="lead_source" id="lead_source" value="direct-form">
+      <input type="hidden" name="utm_source"   id="utm_source">
+      <input type="hidden" name="utm_medium"   id="utm_medium">
+      <input type="hidden" name="utm_campaign" id="utm_campaign">
+      <input type="hidden" name="utm_content"  id="utm_content">
+      <input type="hidden" name="utm_term"     id="utm_term">
+
+      <!-- Two columns on desktop, single column on mobile -->
+      <div class="mt-7 grid gap-4 sm:grid-cols-2 sm:gap-5">
+        <div>
+          <label for="full_name" class="mb-1.5 block text-sm font-medium text-white/80">Full name</label>
+          <input id="full_name" name="full_name" type="text" autocomplete="name"
+                 class="input-base" placeholder="Jane Doe"
+                 x-model="f.full_name" @blur="touch('full_name')" :class="cls('full_name')">
+          <p class="field-msg" x-text="errs.full_name"></p>
+        </div>
+
+        <div>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-white/80">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email"
+                 class="input-base" placeholder="jane@email.com"
+                 x-model="f.email" @blur="touch('email')" :class="cls('email')">
+          <p class="field-msg" x-text="errs.email"></p>
+        </div>
+
+        <div>
+          <label for="whatsapp" class="mb-1.5 block text-sm font-medium text-white/80">WhatsApp number</label>
+          <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel"
+                 class="input-base" placeholder="+1 555 123 4567"
+                 x-model="f.whatsapp" @blur="touch('whatsapp')" :class="cls('whatsapp')">
+          <p class="field-msg" x-text="errs.whatsapp"></p>
+        </div>
+
+        <div>
+          <label for="country" class="mb-1.5 block text-sm font-medium text-white/80">Country</label>
+          <input id="country" name="country" type="text" autocomplete="country-name"
+                 class="input-base" placeholder="United States"
+                 x-model="f.country" @blur="touch('country')" :class="cls('country')">
+          <p class="field-msg" x-text="errs.country"></p>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="travel_interest" class="mb-1.5 block text-sm font-medium text-white/80">Travel interest</label>
+          <select id="travel_interest" name="travel_interest"
+                  class="input-base appearance-none" x-model="f.travel_interest"
+                  @change="touch('travel_interest')" :class="cls('travel_interest')">
+            <option value="" disabled>Choose one…</option>
+            <option value="Family Vacation">Family Vacation</option>
+            <option value="Beach Getaway">Beach Getaway</option>
+            <option value="Cruise">Cruise</option>
+            <option value="City Break">City Break</option>
+            <option value="Weekend Trip">Weekend Trip</option>
+            <option value="Honeymoon or Anniversary">Honeymoon or Anniversary</option>
+            <option value="Visiting Family or Friends">Visiting Family or Friends</option>
+            <option value="All of the Above">All of the Above</option>
+          </select>
+          <p class="field-msg" x-text="errs.travel_interest"></p>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-gold mt-7 w-full px-8 py-4 text-base sm:text-lg">
+        Claim My Free Access
+      </button>
+      <p class="mt-4 text-center text-xs text-white/55">No credit card required · Your details stay private · Takes 2 minutes</p>
+    </form>
+  </div>
+</div>
 
 <!-- =========================================================
      SUCCESS OVERLAY (shown on form submit, before redirect)
@@ -743,20 +763,60 @@ $serverError = isset($_GET['error']);
         } catch (e) {}
       }
 
-      // Smooth scroll to the form.
-      var form = document.getElementById('get-started');
-      if (form) form.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-
-      // Desktop with a fine pointer only: focus Full Name once the scroll settles.
-      // On touch devices, let the visitor tap — no auto-focus.
-      if (prefersFine) {
-        setTimeout(function () {
-          var n = document.getElementById('full_name');
-          if (n) n.focus({ preventScroll: true });
-        }, reduce ? 0 : 700);
-      }
+      // Open the modal (replaces the old scroll-to-form behaviour).
+      openModal();
     }
     window.selectTravelIntent = selectTravelIntent;
+
+    /* ---- Modal open / close ---- */
+    var modal = document.getElementById('lead-modal');
+    var lastFocus = null;
+    function focusables() {
+      return modal ? modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') : [];
+    }
+    function openModal() {
+      if (!modal || modal.classList.contains('show')) return;
+      lastFocus = document.activeElement;
+      modal.classList.remove('closing');
+      modal.style.display = 'grid';
+      document.body.classList.add('modal-open');
+      modal.classList.add('show'); // dialog is visible by default; class plays the entrance
+      // Desktop (fine pointer) only: focus Full Name after the entrance settles.
+      if (prefersFine) {
+        setTimeout(function () { var n = document.getElementById('full_name'); if (n) n.focus({ preventScroll: true }); }, reduce ? 0 : 280);
+      }
+    }
+    function closeModal() {
+      if (!modal || !modal.classList.contains('show')) return;
+      modal.classList.remove('show');
+      document.body.classList.remove('modal-open');
+      if (!reduce) modal.classList.add('closing');
+      // Timeout-based hide is robust even when animations are throttled.
+      setTimeout(function () { modal.style.display = 'none'; modal.classList.remove('closing'); }, reduce ? 0 : 230);
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} }
+    }
+    window.openLeadModal = openModal;
+
+    // Compact CTA button: generic open (reset to direct-form + default heading).
+    document.querySelectorAll('[data-open-modal]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var src = document.getElementById('lead_source'); if (src) src.value = 'direct-form';
+        setHeading('Find Out How Much You Could Save', false);
+        openModal();
+      });
+    });
+    // Close controls: backdrop, ✕ button, ESC, and a basic focus trap.
+    document.querySelectorAll('[data-close-modal]').forEach(function (el) { el.addEventListener('click', closeModal); });
+    document.addEventListener('keydown', function (e) {
+      if (!modal || !modal.classList.contains('show')) return;
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key === 'Tab') {
+        var f = focusables(); if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
 
     // Wire every clickable card (destination, popular trips, booking categories).
     document.querySelectorAll('[data-travel-interest]').forEach(function (card) {
@@ -797,12 +857,18 @@ $serverError = isset($_GET['error']);
       setInterest(map.interest);
       if (map.heading) setHeading(map.heading, false);
     }
-    if (window.Alpine) {
+    function onReady() {
       applyUrlPrefill();
+      // If server-side validation bounced the visitor back, reopen the modal so
+      // they see the error and their (now hidden) form.
+      if (document.getElementById('server-error')) openModal();
+    }
+    if (window.Alpine) {
+      onReady();
     } else {
-      document.addEventListener('alpine:initialized', applyUrlPrefill, { once: true });
+      document.addEventListener('alpine:initialized', onReady, { once: true });
       // Fallback if Alpine never loads.
-      window.addEventListener('load', function () { setTimeout(applyUrlPrefill, 300); });
+      window.addEventListener('load', function () { setTimeout(onReady, 300); });
     }
   })();
 
