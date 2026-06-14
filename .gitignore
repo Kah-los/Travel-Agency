@@ -1,9 +1,6 @@
 # Live credentials — never commit. Use config/db.php.example as the template.
 config/db.php
 
-# Local photo asset (Naomi uploads this directly to the host)
-assets/naomi.jpg
-
 # OS / editor noise
 .DS_Store
 Thumbs.db
