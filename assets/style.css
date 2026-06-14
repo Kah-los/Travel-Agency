@@ -174,10 +174,12 @@ body {
 .media .scrim {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(7,13,36,.88) 2%, rgba(7,13,36,.30) 42%, rgba(7,13,36,0) 72%);
+  transition: opacity .35s var(--ease-out);
 }
 .media .label {
   position: absolute; left: 0; right: 0; bottom: 0;
   padding: 1.15rem 1.3rem; color: #fff;
+  transition: transform .3s var(--ease-out);
 }
 .media .label .tag {
   display: inline-block; margin-bottom: .4rem;
@@ -198,6 +200,11 @@ body {
   .cat-card:hover .media img,
   .trip-card:hover .media img { transform: scale(1.07); }
   .cat-card:hover .media .label .tag { width: 46px; }
+  /* Title lifts and the dark overlay lightens slightly on hover */
+  .cat-card:hover .media .label,
+  .trip-card:hover .media .label { transform: translateY(-5px); }
+  .cat-card:hover .media .scrim,
+  .trip-card:hover .media .scrim { opacity: .82; }
   /* Gold ring on hover signals the whole card is pressable */
   .cat-card:hover { box-shadow: 0 0 0 2px rgba(201,168,76,.65), var(--shadow-lg); }
   .trip-card:hover { box-shadow: 0 0 0 2px rgba(201,168,76,.65), var(--shadow-lg); }
@@ -231,12 +238,18 @@ body {
   .book-card p  { font-size: .9rem; line-height: 1.55; }
 }
 .book-card.is-link { cursor: pointer; }
+.book-card .ic { transition: background-color .3s var(--ease-out), box-shadow .3s var(--ease-out); }
 @media (hover: hover) and (pointer: fine) {
   .book-card.is-link:hover {
-    transform: translateY(-4px);
-    border-color: rgba(201,168,76,.6);
+    transform: translateY(-6px);
+    border-color: rgba(201,168,76,.7);
     background: rgba(255,255,255,.07);
-    box-shadow: 0 22px 46px -22px rgba(0,0,0,.7);
+    box-shadow: 0 26px 52px -24px rgba(0,0,0,.75);
+  }
+  /* Gold icon background glows softly on hover */
+  .book-card.is-link:hover .ic {
+    background: rgba(201,168,76,.22);
+    box-shadow: 0 0 22px -4px rgba(201,168,76,.55);
   }
 }
 .book-card.is-link:active { transform: scale(.985); }
@@ -271,13 +284,17 @@ body {
    Hero — drenched navy with a real destination photo + overlay
    ------------------------------------------------------------- */
 .hero {
-  position: relative; isolation: isolate;
+  position: relative; isolation: isolate; overflow: hidden;
   background: var(--navy-900);
 }
 .hero-photo {
   position: absolute; inset: 0; z-index: -2;
   background-size: cover; background-position: center;
-  /* image set inline so we can swap/verify the URL */
+  /* image set inline so we can swap/verify the URL.
+     Base scale gives headroom for the parallax translate (≤80px) so the
+     edges never expose. JS layers a slow Ken Burns zoom + parallax on top. */
+  transform: scale(1.06);
+  will-change: transform;
 }
 .hero-overlay {
   position: absolute; inset: 0; z-index: -1;
@@ -336,8 +353,13 @@ body {
     content: ""; position: absolute; top: 40px; left: 16%; right: 16%; height: 2px;
     background: linear-gradient(90deg, transparent, var(--line-strong) 18%, var(--line-strong) 82%, transparent);
     z-index: 0;
+    /* Grows left → right when the section enters view (.steps.line-in) */
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform .9s var(--ease-out);
   }
+  .steps.line-in::before { transform: scaleX(1); }
 }
+.js .steps:not(.line-in)::before { transform: scaleX(0); }
 .step-badge {
   width: 80px; height: 80px; border-radius: 50%;
   display: grid; place-items: center;
@@ -378,6 +400,26 @@ body {
   color: rgba(201,168,76,.26);
 }
 .stars { color: var(--gold); }
+
+/* -------------------------------------------------------------
+   Testimonials carousel — desktop = 3-up grid (all visible),
+   mobile = 1-up swipeable track with dots + auto-rotate.
+   ------------------------------------------------------------- */
+.t-track { display: flex; }
+.t-slide { flex: 0 0 100%; min-width: 0; }
+@media (max-width: 767px) {
+  .t-carousel { overflow: hidden; }
+  .t-track { transition: transform .4s var(--ease-out); will-change: transform; }
+}
+@media (min-width: 768px) {
+  .t-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; transform: none !important; }
+}
+.t-dots { display: flex; justify-content: center; gap: 8px; margin-top: 1.25rem; }
+.t-dot {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0; border: none; cursor: pointer;
+  background: var(--line-strong); transition: width .25s var(--ease-out), background-color .25s ease;
+}
+.t-dot.active { width: 22px; border-radius: 5px; background: var(--gold); }
 
 /* -------------------------------------------------------------
    About photo — gold glow frame
@@ -484,4 +526,8 @@ body.modal-open { overflow: hidden; }
   .modal.closing .modal-backdrop, .modal.closing .modal-dialog { animation: none !important; }
   .btn:active, .cat-card:active, .trip-card:active, .book-card.is-link:active, .modal-close:active { transform: none; }
   .lift:hover, .btn-gold:hover, .btn-ghost:hover, .btn-outline:hover { transform: none; }
+  /* New motion: kill parallax/Ken Burns, carousel slide, and line growth. */
+  .hero-photo { transform: scale(1.06) !important; }
+  .t-track { transition: none !important; }
+  .steps::before { transform: scaleX(1) !important; transition: none !important; }
 }

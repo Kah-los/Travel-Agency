@@ -372,7 +372,10 @@ $serverError = isset($_GET['error']);
       <p class="lede mt-4 text-lg">A few of the people who stopped overpaying after joining through Naomi.</p>
     </div>
 
-    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+    <!-- Carousel: desktop shows all three (grid); mobile shows one at a time
+         with swipe, dots and a 7s auto-rotate (paused on touch / reduced-motion). -->
+    <div class="t-carousel mt-14" data-carousel>
+      <div class="t-track" id="t-track">
       <?php
         $quotes = [
           ['We booked our Orlando family trip for the kids and saved enough to add two extra park days. I kept refreshing Expedia in disbelief.', 'Danielle M.', 'Atlanta, USA'],
@@ -381,19 +384,21 @@ $serverError = isset($_GET['error']);
         ];
         foreach ($quotes as $i => [$text, $name, $place]):
       ?>
-      <figure class="reveal card lift quote flex flex-col p-5 sm:p-7" data-delay="<?= $i ?>">
+      <figure class="t-slide reveal card lift quote flex flex-col p-5 sm:p-7" data-delay="<?= $i ?>">
         <div class="stars mb-3 flex gap-0.5 sm:gap-1" aria-label="5 out of 5 stars">
           <?php for ($s = 0; $s < 5; $s++): ?>
             <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.45 4.45a1 1 0 00.95.69h4.68c.97 0 1.37 1.24.59 1.81l-3.79 2.75a1 1 0 00-.36 1.12l1.45 4.45c.3.92-.76 1.69-1.54 1.12l-3.79-2.75a1 1 0 00-1.18 0l-3.79 2.75c-.78.57-1.84-.2-1.54-1.12l1.45-4.45a1 1 0 00-.36-1.12L1.33 9.88c-.78-.57-.38-1.81.59-1.81h4.68a1 1 0 00.95-.69L9.05 2.93z"/></svg>
           <?php endfor; ?>
         </div>
-        <blockquote class="relative z-10 grow text-sm leading-relaxed text-ink-2 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:6] overflow-hidden sm:[-webkit-line-clamp:unset] sm:overflow-visible sm:text-[0.98rem]">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
+        <blockquote class="relative z-10 grow text-sm leading-relaxed text-ink-2 sm:text-[0.98rem]">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
         <figcaption class="mt-4 border-t border-line pt-3 sm:mt-6 sm:pt-4">
           <span class="block text-sm font-semibold text-ink sm:text-base"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
           <span class="text-xs text-ink-3 sm:text-sm"><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></span>
         </figcaption>
       </figure>
       <?php endforeach; ?>
+      </div>
+      <div class="t-dots md:hidden" id="t-dots" role="tablist" aria-label="Choose testimonial"></div>
     </div>
   </div>
 </section>
@@ -690,6 +695,92 @@ $serverError = isset($_GET['error']);
         host.appendChild(p);
       }
     });
+  })();
+
+  /* ---- Hero parallax + slow Ken Burns zoom (rAF only while hero visible) ---- */
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var hero = document.querySelector('.hero');
+    var photo = hero && hero.querySelector('.hero-photo');
+    if (!photo) return;
+    var running = false, t0 = performance.now();
+    function frame(now) {
+      if (!running) return;
+      var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var parallax = Math.min(Math.max(sy, 0) * 0.3, 80);            // ≤ 80px, subtle
+      var kb = 1.06 + (Math.sin((now - t0) / 9000) + 1) * 0.03;       // slow 1.06 → 1.12 zoom
+      photo.style.transform = 'translate3d(0,' + parallax.toFixed(1) + 'px,0) scale(' + kb.toFixed(4) + ')';
+      requestAnimationFrame(frame);
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && !running) { running = true; requestAnimationFrame(frame); }
+          else if (!e.isIntersecting) { running = false; }
+        });
+      }, { threshold: 0 }).observe(hero);
+    } else { running = true; requestAnimationFrame(frame); }
+  })();
+
+  /* ---- How It Works: grow the connecting line when it enters view ---- */
+  (function () {
+    var steps = document.querySelector('.steps');
+    if (!steps) return;
+    if (!('IntersectionObserver' in window)) { steps.classList.add('line-in'); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { steps.classList.add('line-in'); io.unobserve(steps); } });
+    }, { threshold: 0.4 });
+    io.observe(steps);
+  })();
+
+  /* ---- Testimonials carousel (mobile: 1-up swipe + dots + 7s auto-rotate) ---- */
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var carousel = document.querySelector('[data-carousel]');
+    if (!carousel) return;
+    var track = carousel.querySelector('.t-track');
+    var dotsWrap = carousel.querySelector('.t-dots');
+    var n = track.children.length;
+    var mq = window.matchMedia('(max-width: 767px)');
+    var idx = 0, timer = null;
+
+    for (var i = 0; i < n; i++) {
+      var d = document.createElement('button');
+      d.className = 't-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Show testimonial ' + (i + 1));
+      (function (k) { d.addEventListener('click', function () { go(k); restart(); }); })(i);
+      dotsWrap.appendChild(d);
+    }
+    function render() {
+      if (mq.matches) track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+      else track.style.transform = '';
+      var dots = dotsWrap.children;
+      for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === idx);
+    }
+    function go(i) { idx = (i + n) % n; render(); }
+    function next() { go(idx + 1); }
+    function start() { if (reduce || !mq.matches) return; stop(); timer = setInterval(next, 7000); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function restart() { stop(); start(); }
+
+    // Swipe (mobile)
+    var x0 = null;
+    track.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; stop(); }, { passive: true });
+    track.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) { dx < 0 ? next() : go(idx - 1); }
+      x0 = null; start();
+    }, { passive: true });
+
+    // Pause on hover; respect tab visibility; re-evaluate on breakpoint change.
+    carousel.addEventListener('mouseenter', stop);
+    carousel.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    var onMq = function () { idx = 0; render(); restart(); };
+    if (mq.addEventListener) mq.addEventListener('change', onMq); else mq.addListener(onMq);
+
+    render(); start();
   })();
 
   /* ---- Smart intent capture: lead source + UTM + dual-URL pre-fill ---- */
