@@ -1,0 +1,57 @@
+# =============================================================
+#  TravelWithNaomi — Apache config (cPanel / shared hosting)
+# =============================================================
+
+# ---- Custom error page ----
+ErrorDocument 404 /404.php
+
+# ---- Don't list directory contents ----
+Options -Indexes
+
+# ---- Default document ----
+DirectoryIndex index.php index.html
+
+# ---- Force HTTPS (uncomment once your SSL certificate is active) ----
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ---- Block direct access to sensitive files ----
+# Credentials, SQL, templates, docs, dotfiles, and the PHPMailer source.
+<FilesMatch "(^\.|\.(sql|example|md|log|json|lock|ini)$)">
+  Require all denied
+</FilesMatch>
+
+# ---- Block direct web access to back-end folders ----
+RedirectMatch 404 ^/config/.*$
+RedirectMatch 404 ^/setup/.*$
+RedirectMatch 404 ^/libs/.*$
+
+# ---- Security headers ----
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ---- Gzip / deflate compression ----
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml \
+    application/javascript application/json image/svg+xml
+</IfModule>
+
+# ---- Browser caching for static assets ----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 6 months"
+  ExpiresByType image/png "access plus 6 months"
+  ExpiresByType image/webp "access plus 6 months"
+  ExpiresByType image/svg+xml "access plus 6 months"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>

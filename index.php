@@ -26,6 +26,13 @@ $wa  = htmlspecialchars($WHATSAPP_LINK, ENT_QUOTES, 'UTF-8');
 
 // Did submit.php bounce back a server-side validation error?
 $serverError = isset($_GET['error']);
+
+// Canonical URL (host + path, query stripped) for SEO + social cards.
+$scheme    = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host      = $_SERVER['HTTP_HOST'] ?? 'travelwithnaomi.com';
+$path      = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+$canonical = htmlspecialchars($scheme . '://' . $host . $path, ENT_QUOTES, 'UTF-8');
+$ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=1200&h=630&q=80';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,10 +42,23 @@ $serverError = isset($_GET['error']);
   <title>TravelWithNaomi — Stop Overpaying for Travel</title>
   <meta name="description" content="Naomi Henry gives you free access to a members-only travel portal that beats Expedia and Booking.com up to 90% of the time. Free to join, no credit card.">
   <meta name="theme-color" content="#0B1437">
+  <link rel="canonical" href="<?= $canonical ?>">
 
+  <!-- Favicon (SVG; modern browsers) -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+
+  <!-- Open Graph / social cards -->
   <meta property="og:title" content="TravelWithNaomi — Stop Overpaying for Travel">
   <meta property="og:description" content="A members-only travel portal that beats the major platforms up to 90% of the time. Free to join.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="<?= $canonical ?>">
+  <meta property="og:image" content="<?= $ogImage ?>">
+  <meta property="og:site_name" content="TravelWithNaomi">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TravelWithNaomi — Stop Overpaying for Travel">
+  <meta name="twitter:description" content="A members-only travel portal that beats the major platforms up to 90% of the time. Free to join.">
+  <meta name="twitter:image" content="<?= $ogImage ?>">
 
   <!-- Fonts: Playfair Display (display) + Jost (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
