@@ -275,10 +275,17 @@ body {
 }
 .hero-overlay {
   position: absolute; inset: 0; z-index: -1;
+  /* Lightened ~30% so the photography (traveler, balloons, landscape) reads
+     clearly. Navy cinematic atmosphere stays; the photo leads, overlay second.
+     A soft bottom gradient preserves text contrast where the copy + CTA sit. */
   background:
-    radial-gradient(1100px 700px at 78% -5%, rgba(201,168,76,.20), transparent 55%),
-    linear-gradient(180deg, rgba(7,13,36,.72) 0%, rgba(8,15,40,.82) 45%, rgba(7,13,36,.95) 100%);
+    radial-gradient(1100px 700px at 78% -5%, rgba(201,168,76,.16), transparent 55%),
+    linear-gradient(180deg, rgba(7,13,36,.42) 0%, rgba(8,15,40,.46) 38%, rgba(7,13,36,.74) 100%);
 }
+/* With the lighter overlay, a soft shadow keeps hero copy legible (AA) over
+   bright parts of the photo without darkening the whole scene. */
+.hero h1, .hero h2, .hero p, .hero .kicker { text-shadow: 0 2px 20px rgba(7,13,36,.55); }
+
 .float-words { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
 .float-words span {
   position: absolute; font-family: 'Playfair Display', serif; font-style: italic;
@@ -360,9 +367,9 @@ body {
    ------------------------------------------------------------- */
 .quote { position: relative; }
 .quote::before {
-  content: "\201C"; position: absolute; top: -.35em; left: .35rem;
-  font-family: 'Playfair Display', serif; font-size: 4.5rem; line-height: 1;
-  color: rgba(201,168,76,.28);
+  content: "\201C"; position: absolute; top: -.2em; left: .3rem;
+  font-family: 'Playfair Display', serif; font-size: clamp(2.6rem, 9vw, 4.5rem); line-height: 1;
+  color: rgba(201,168,76,.26);
 }
 .stars { color: var(--gold); }
 

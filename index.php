@@ -228,7 +228,7 @@ $serverError = isset($_GET['error']);
       <p class="lede mt-4 text-lg">Chances are the trip you're already dreaming about is right here.</p>
     </div>
 
-    <div class="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
       <?php
         // [name, description, dropdown interest, photo id, alt, personalised heading, lead_source, url slug]
         $trips = [
@@ -252,10 +252,10 @@ $serverError = isset($_GET['error']);
                alt="<?= $alt ?>" loading="lazy" width="800" height="600">
           <div class="scrim"></div>
           <div class="label">
-            <h3 class="font-display text-xl font-bold leading-tight"><?= $name ?></h3>
+            <h3 class="font-display text-base font-bold leading-tight sm:text-xl"><?= $name ?></h3>
           </div>
         </div>
-        <p class="px-6 py-5 leading-relaxed text-ink-2"><?= $desc ?></p>
+        <p class="px-4 py-4 text-sm leading-relaxed text-ink-2 sm:px-6 sm:py-5 sm:text-base"><?= $desc ?></p>
       </a>
       <?php endforeach; ?>
     </div>
@@ -263,36 +263,7 @@ $serverError = isset($_GET['error']);
 </section>
 
 <!-- =========================================================
-     SECTION 4 — HOW IT WORKS (light)
-     ========================================================= -->
-<section id="how" class="sec-mist edge-top py-24 sm:py-28">
-  <div class="mx-auto max-w-6xl px-5 sm:px-8">
-    <div class="reveal mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Saving starts in three simple steps</h2>
-      <p class="lede mt-4 text-lg">From sign-up to your first cheaper trip, the whole thing takes about two minutes.</p>
-    </div>
-
-    <div class="steps mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
-      <?php
-        $steps = [
-          ['1', 'Sign Up Free', "Create your account through Naomi's personal link. No card, no fee, no catch."],
-          ['2', 'Search Any Trip', 'Flights, hotels and car rentals worldwide, all in one members-only portal.'],
-          ['3', 'Save Instantly', 'See your member price and book for less than you would pay anywhere else.'],
-        ];
-        foreach ($steps as $i => [$n, $title, $desc]):
-      ?>
-      <div class="reveal relative z-10 text-center" data-delay="<?= $i ?>">
-        <div class="step-badge mx-auto"><?= $n ?></div>
-        <h3 class="mt-6 font-display text-xl font-semibold text-ink"><?= $title ?></h3>
-        <p class="mx-auto mt-3 max-w-xs leading-relaxed text-ink-2"><?= $desc ?></p>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     SECTION 4b — WHAT YOU CAN BOOK (drenched navy, icon cards)
+     SECTION 4 — WHAT YOU CAN BOOK (drenched navy, icon cards)
      ========================================================= -->
 <section id="booking" class="sec-navy py-24 sm:py-28">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
@@ -401,7 +372,7 @@ $serverError = isset($_GET['error']);
       <p class="lede mt-4 text-lg">A few of the people who stopped overpaying after joining through Naomi.</p>
     </div>
 
-    <div class="mt-14 grid gap-7 md:grid-cols-3">
+    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
       <?php
         $quotes = [
           ['We booked our Orlando family trip for the kids and saved enough to add two extra park days. I kept refreshing Expedia in disbelief.', 'Danielle M.', 'Atlanta, USA'],
@@ -410,18 +381,47 @@ $serverError = isset($_GET['error']);
         ];
         foreach ($quotes as $i => [$text, $name, $place]):
       ?>
-      <figure class="reveal card lift quote p-8" data-delay="<?= $i ?>">
-        <div class="stars mb-4 flex gap-1" aria-label="5 out of 5 stars">
+      <figure class="reveal card lift quote flex flex-col p-5 sm:p-7" data-delay="<?= $i ?>">
+        <div class="stars mb-3 flex gap-0.5 sm:gap-1" aria-label="5 out of 5 stars">
           <?php for ($s = 0; $s < 5; $s++): ?>
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.45 4.45a1 1 0 00.95.69h4.68c.97 0 1.37 1.24.59 1.81l-3.79 2.75a1 1 0 00-.36 1.12l1.45 4.45c.3.92-.76 1.69-1.54 1.12l-3.79-2.75a1 1 0 00-1.18 0l-3.79 2.75c-.78.57-1.84-.2-1.54-1.12l1.45-4.45a1 1 0 00-.36-1.12L1.33 9.88c-.78-.57-.38-1.81.59-1.81h4.68a1 1 0 00.95-.69L9.05 2.93z"/></svg>
+            <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.45 4.45a1 1 0 00.95.69h4.68c.97 0 1.37 1.24.59 1.81l-3.79 2.75a1 1 0 00-.36 1.12l1.45 4.45c.3.92-.76 1.69-1.54 1.12l-3.79-2.75a1 1 0 00-1.18 0l-3.79 2.75c-.78.57-1.84-.2-1.54-1.12l1.45-4.45a1 1 0 00-.36-1.12L1.33 9.88c-.78-.57-.38-1.81.59-1.81h4.68a1 1 0 00.95-.69L9.05 2.93z"/></svg>
           <?php endfor; ?>
         </div>
-        <blockquote class="relative z-10 leading-relaxed text-ink-2">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
-        <figcaption class="mt-6 border-t border-line pt-4">
-          <span class="block font-semibold text-ink"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
-          <span class="text-sm text-ink-3"><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></span>
+        <blockquote class="relative z-10 grow text-sm leading-relaxed text-ink-2 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:6] overflow-hidden sm:[-webkit-line-clamp:unset] sm:overflow-visible sm:text-[0.98rem]">“<?= htmlspecialchars($text, ENT_QUOTES, 'UTF-8') ?>”</blockquote>
+        <figcaption class="mt-4 border-t border-line pt-3 sm:mt-6 sm:pt-4">
+          <span class="block text-sm font-semibold text-ink sm:text-base"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
+          <span class="text-xs text-ink-3 sm:text-sm"><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></span>
         </figcaption>
       </figure>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 6b — HOW IT WORKS (light) — moved below testimonials
+     ========================================================= -->
+<section id="how" class="sec-paper edge-top py-24 sm:py-28">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink" style="text-wrap:balance;">Saving starts in three simple steps</h2>
+      <p class="lede mt-4 text-lg">From sign-up to your first cheaper trip, the whole thing takes about two minutes.</p>
+    </div>
+
+    <div class="steps mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
+      <?php
+        $steps = [
+          ['1', 'Sign Up Free', "Create your account through Naomi's personal link. No card, no fee, no catch."],
+          ['2', 'Search Any Trip', 'Flights, hotels and car rentals worldwide, all in one members-only portal.'],
+          ['3', 'Save Instantly', 'See your member price and book for less than you would pay anywhere else.'],
+        ];
+        foreach ($steps as $i => [$n, $title, $desc]):
+      ?>
+      <div class="reveal relative z-10 text-center" data-delay="<?= $i ?>">
+        <div class="step-badge mx-auto"><?= $n ?></div>
+        <h3 class="mt-6 font-display text-xl font-semibold text-ink"><?= $title ?></h3>
+        <p class="mx-auto mt-3 max-w-xs leading-relaxed text-ink-2"><?= $desc ?></p>
+      </div>
       <?php endforeach; ?>
     </div>
   </div>
@@ -554,7 +554,7 @@ $serverError = isset($_GET['error']);
      SECTION 9 — FINAL CTA (drenched navy + photo)
      ========================================================= -->
 <section class="hero relative overflow-hidden py-28">
-  <div class="hero-photo" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80'); filter:grayscale(.1);" aria-hidden="true"></div>
+  <div class="hero-photo" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80');" aria-hidden="true"></div>
   <div class="hero-overlay" aria-hidden="true"></div>
   <div class="relative z-10 mx-auto max-w-3xl px-5 text-center text-white sm:px-8">
     <h2 class="reveal font-display text-[clamp(2.2rem,6vw,3.6rem)] font-bold leading-[1.08]" style="text-wrap:balance;">
