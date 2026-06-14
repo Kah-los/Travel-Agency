@@ -550,26 +550,6 @@ $serverError = isset($_GET['error']);
   </div>
 </section>
 
-<!-- =========================================================
-     SECTION 9 — FINAL CTA (drenched navy + photo)
-     ========================================================= -->
-<section class="hero relative overflow-hidden py-28">
-  <div class="hero-photo" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80');" aria-hidden="true"></div>
-  <div class="hero-overlay" aria-hidden="true"></div>
-  <div class="relative z-10 mx-auto max-w-3xl px-5 text-center text-white sm:px-8">
-    <h2 class="reveal font-display text-[clamp(2.2rem,6vw,3.6rem)] font-bold leading-[1.08]" style="text-wrap:balance;">
-      Your next trip should cost less. Start here.
-    </h2>
-    <p class="reveal mx-auto mt-6 max-w-xl text-lg text-white/85" data-delay="1">
-      Join through my personal link and get instant access to the Vortex365 members portal, completely free.
-    </p>
-    <div class="reveal mt-9 flex flex-col items-center gap-4" data-delay="2">
-      <a href="<?= $ref ?>" class="btn btn-gold px-10 py-4 text-base sm:text-lg">Claim My Free Access Now</a>
-      <p class="text-sm text-white/60">Free to join · No credit card · Cancel anytime</p>
-    </div>
-  </div>
-</section>
-
 </main>
 
 <!-- =========================================================
