@@ -291,20 +291,26 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
       <p class="mt-4 text-lg text-white/70">One membership, your whole trip covered. Tap a category to get started.</p>
     </div>
 
-    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+    <div class="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
       <?php
-        // [label, interest, heading, lead_source, slug, icon-paths, caption]
+        // The real Vortex365 portal categories. [label, interest, heading, lead_source, slug, icon-paths, caption]
         $booking = [
-          ['Hotels and Resorts', 'All of the Above', 'Find Out How Much You Could Save on Hotels and Resorts', 'hotels-resorts-card', 'hotels-resorts',
+          ['Hotels', 'All of the Above', 'Find Out How Much You Could Save on Hotels', 'hotels-card', 'hotels',
             'M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M10 9h.01M14 9h.01M10 13h.01M14 13h.01M10 17h4', 'Member rates on stays worldwide.'],
-          ['Cruises', 'Cruise', 'Find Out How Much You Could Save on a Cruise', 'cruises-booking-card', 'cruise',
+          ['Cruises', 'Cruise', 'Find Out How Much You Could Save on a Cruise', 'cruises-card', 'cruise',
             'M12 3v6M5 9h14l-1.5 6H6.5L5 9zM4 19c1.4 1 2.9 1 4 0s2.6-1 4 0 2.9 1 4 0 2.6-1 4 0', 'Sail for less than the cruise lines quote.'],
-          ['Family Vacations', 'Family Vacation', 'Find Out How Much You Could Save on a Family Vacation', 'family-booking-card', 'family-vacation',
-            'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', 'Bigger trips, smaller bills.'],
-          ['Weekend Getaways', 'Weekend Trip', 'Find Out How Much You Could Save on a Weekend Getaway', 'weekend-booking-card', 'weekend-trip',
-            'M6 7h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M10 12v4M14 12v4', "Quick escapes that don't break the bank."],
-          ['Car Rentals', 'All of the Above', 'Find Out How Much You Could Save on Car Rentals', 'car-rentals-card', 'car-rentals',
-            'M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13M5 13h14v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1M5 13v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1M7.5 16h.01M16.5 16h.01', 'Wheels at the destination for less.'],
+          ['Cars', 'All of the Above', 'Find Out How Much You Could Save on Car Rentals', 'cars-card', 'cars',
+            'M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13M5 13h14v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1M5 13v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1M7.5 16h.01M16.5 16h.01', 'Rental cars at your destination for less.'],
+          ['Flights', 'All of the Above', 'Find Out How Much You Could Save on Flights', 'flights-card', 'flights',
+            'M21 15v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5.5z', "Fly for less, wherever you're headed."],
+          ['Homes', 'All of the Above', 'Find Out How Much You Could Save on Holiday Homes', 'homes-card', 'homes',
+            'M3 11.5 12 4l9 7.5M5 10v10h5v-6h4v6h5V10', 'Private homes and condos at member prices.'],
+          ['Weeks', 'All of the Above', 'Find Out How Much You Could Save on Resort Weeks', 'weeks-card', 'weeks',
+            'M7 3v3M17 3v3M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM4 10h16M8 14h3v3H8z', 'Full resort weeks at deep discounts.'],
+          ['Activities', 'All of the Above', 'Find Out How Much You Could Save on Activities', 'activities-card', 'activities',
+            'M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4zM15 6v12', 'Tours, excursions and experiences.'],
+          ['Lifestyle', 'All of the Above', 'Find Out How Much You Could Save on Lifestyle Perks', 'lifestyle-card', 'lifestyle',
+            'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM18.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z', 'Airport lounges, transport and transfers.'],
         ];
         foreach ($booking as $i => [$label, $interest, $heading, $source, $slug, $icon, $caption]):
       ?>
@@ -320,13 +326,6 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
         <p><?= $caption ?></p>
       </a>
       <?php endforeach; ?>
-
-      <!-- Personal Support: informational, NOT clickable (no mapping, no pointer) -->
-      <div class="book-card no-link reveal" data-delay="2">
-        <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2zM20 14a2 2 0 0 0-2-2h-1v5h1a2 2 0 0 0 2-2zM18 17v1a3 3 0 0 1-3 3h-3"/></svg></span>
-        <h3>Personal Support</h3>
-        <p>Naomi is on hand to help you book every step of the way.</p>
-      </div>
     </div>
   </div>
 </section>
