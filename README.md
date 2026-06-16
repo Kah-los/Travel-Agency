@@ -1,6 +1,6 @@
 # TravelWithNaomi — Vortex365 Referral Landing Page
 
-A premium travel-brand landing page and lead-capture system for **Naomi Henry**, an independent Vortex365 (Surge365) travel-savings ambassador. Visitors browse destinations, open a modal lead form (pre-filled by the card they clicked), and are forwarded to Naomi's Vortex365 referral link while their details are saved for follow-up. Includes an admin dashboard with lead-source and UTM tracking.
+A premium travel-brand landing page and lead-capture system for **Naomi**, an independent Vortex365 (Surge365) travel-savings ambassador. Visitors browse destinations, open a modal lead form (pre-filled by the card they clicked), and are forwarded to Naomi's Vortex365 referral link while their details are saved for follow-up. Includes an admin dashboard with lead-source and UTM tracking.
 
 No build step. No npm, no Composer. Upload and run on any PHP 8+ / MySQL host (cPanel shared hosting or Railway).
 

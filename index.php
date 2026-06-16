@@ -40,7 +40,7 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TravelWithNaomi — Stop Overpaying for Travel</title>
-  <meta name="description" content="Naomi Henry gives you free access to a members-only travel portal that beats Expedia and Booking.com up to 90% of the time. Free to join, no credit card.">
+  <meta name="description" content="Naomi gives you free access to a members-only travel portal that beats Expedia and Booking.com up to 90% of the time. Free to join, no credit card.">
   <meta name="theme-color" content="#0B1437">
   <link rel="canonical" href="<?= $canonical ?>">
 
@@ -154,7 +154,7 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
   <div class="particles" id="particles" aria-hidden="true"></div>
 
   <div class="relative z-10 mx-auto max-w-4xl px-5 text-center text-white sm:px-8">
-    <p class="reveal kicker mb-6 justify-center">Hosted personally by Naomi Henry · Vortex365 Ambassador</p>
+    <p class="reveal kicker mb-6 justify-center">Hosted personally by Naomi · Vortex365 Ambassador</p>
     <h1 class="reveal font-display text-[clamp(2.5rem,7.5vw,5.25rem)] font-bold leading-[1.04] tracking-tight" style="text-wrap:balance;">
       Stop Paying Full Price<br>for Travel.
     </h1>
@@ -461,7 +461,7 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
       <div class="glow-frame overflow-hidden">
         <img
           src="assets/naomi.jpg"
-          alt="Naomi Henry, your TravelWithNaomi Vortex365 ambassador"
+          alt="Naomi, your TravelWithNaomi Vortex365 ambassador"
           class="h-full w-full object-cover"
           width="640" height="800" loading="lazy"
           onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80';"
@@ -470,16 +470,12 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
     </div>
 
     <div class="reveal" data-delay="1">
-      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink">Hi, I'm Naomi Henry</h2>
+      <h2 class="font-display text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-ink">Hi, I'm Naomi</h2>
       <p class="mt-6 text-lg leading-relaxed text-ink-2">
         I discovered Vortex365 and couldn't keep it to myself. Whether you travel for work,
         family or adventure, you deserve to stop overpaying. I'm here personally to help you
         get access and start saving today.
       </p>
-      <a href="<?= $wa ?>" class="btn btn-outline mt-8 px-7 py-3">
-        <svg class="h-5 w-5 text-gold-ink" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.748-.985zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414z"/></svg>
-        Message Me Directly
-      </a>
     </div>
   </div>
 </section>
@@ -508,13 +504,13 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
     <div class="flex flex-col items-center gap-8 md:flex-row md:items-start md:justify-between">
       <div class="text-center md:text-left">
         <a href="#top" class="font-display text-xl font-bold">Travel<span class="text-gold">With</span>Naomi</a>
-        <p class="mt-3 max-w-xs text-sm text-white/55">Members-only travel savings, shared personally by Naomi Henry.</p>
+        <p class="mt-3 max-w-xs text-sm text-white/55">Members-only travel savings, shared personally by Naomi.</p>
       </div>
 
       <nav class="flex gap-7 text-sm text-white/70">
         <a href="#" class="transition hover:text-gold">Privacy</a>
         <a href="#how" class="transition hover:text-gold">How It Works</a>
-        <a href="<?= $wa ?>" class="transition hover:text-gold">Contact</a>
+        <a href="#get-started" class="transition hover:text-gold">Get Started</a>
       </nav>
 
       <!-- Social links — replace [MY_SOCIAL_LINKS] -->
@@ -533,7 +529,7 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
 
     <div class="mt-12 border-t border-white/10 pt-8 text-center">
       <p class="mx-auto max-w-2xl text-xs leading-relaxed text-white/45">
-        Naomi Henry is an independent Vortex365 member. This site is not affiliated with or endorsed by Surge365 corporate.
+        Naomi is an independent Vortex365 member. This site is not affiliated with or endorsed by Surge365 corporate.
       </p>
       <p class="mt-4 text-xs text-white/40">© 2026 TravelWithNaomi. All rights reserved.</p>
     </div>
