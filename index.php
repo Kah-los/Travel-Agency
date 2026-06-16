@@ -154,7 +154,6 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
   <div class="particles" id="particles" aria-hidden="true"></div>
 
   <div class="relative z-10 mx-auto max-w-4xl px-5 text-center text-white sm:px-8">
-    <p class="reveal kicker mb-6 justify-center">Hosted personally by Naomi · Vortex365 Ambassador</p>
     <h1 class="reveal font-display text-[clamp(2.5rem,7.5vw,5.25rem)] font-bold leading-[1.04] tracking-tight" style="text-wrap:balance;">
       Stop Paying Full Price<br>for Travel.
     </h1>
