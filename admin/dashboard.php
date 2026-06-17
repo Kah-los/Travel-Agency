@@ -9,6 +9,16 @@
  * =============================================================
  */
 
+// Harden the session cookie before the session starts (matches login.php
+// and the API so all three share the same hardened session).
+$secureCookie = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure'   => $secureCookie,
+]);
 session_start();
 
 // ---- Gatekeeper ----

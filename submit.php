@@ -1,25 +1,26 @@
 <?php
 /**
  * =============================================================
- *  TravelWithNaomi — Lead Capture Handler
+ *  TravelWithNaomi — Lead Capture Handler (HTML form)
  * -------------------------------------------------------------
  *  Receives the POST from the lead form on index.php:
- *    1. Sanitises + validates every field server-side.
- *    2. Inserts the lead into `leads`.
- *    3. Logs a row in `referral_clicks`.
- *    4. Emails a notification to the ambassador.
- *    5. Shows a branded success overlay, then redirects to the
+ *    1. Validates every field server-side (shared Leads service).
+ *    2. Inserts the lead, logs a referral click, emails the
+ *       ambassador — all through the SAME code path the JSON API
+ *       uses (api/lib/Leads.php), so there is one source of truth.
+ *    3. Shows a branded success overlay, then redirects to the
  *       Vortex365 referral link after 3 seconds.
  *
- *  Database errors are never exposed to the visitor.
+ *  Database/email errors are never exposed to the visitor.
  * =============================================================
  */
 
 require __DIR__ . '/config/db.php';
+require __DIR__ . '/api/lib/Leads.php';
 
-// ---- PLACEHOLDERS — replace before going live ----
-const MY_REFERRAL_LINK = '[MY_REFERRAL_LINK]';        // Naomi's Vortex365 referral URL
-const MY_EMAIL         = '[MY_EMAIL]';                // Where lead notifications are sent
+// Naomi's Vortex365 referral URL — set APP_REFERRAL_LINK in config/db.php,
+// otherwise the classic [MY_REFERRAL_LINK] placeholder is used.
+$referral = Leads::referralLink();
 
 // If someone opens submit.php directly (GET), send them home.
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
@@ -28,81 +29,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 /* -----------------------------------------------------------
- *  Helpers
+ *  Collect + validate (shared service)
  * --------------------------------------------------------- */
-function clean(string $key): string {
-    $value = $_POST[$key] ?? '';
-    // Strip control chars / tags, collapse whitespace, trim.
-    $value = strip_tags((string) $value);
-    $value = preg_replace('/\s+/u', ' ', $value);
-    return trim($value);
-}
+[$clean, $errors] = Leads::validate($_POST);
 
-function client_ip(): string {
-    foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
-        if (!empty($_SERVER[$key])) {
-            // X-Forwarded-For can be a list; take the first.
-            $ip = trim(explode(',', $_SERVER[$key])[0]);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                return $ip;
-            }
-        }
-    }
-    return '0.0.0.0';
+// The classic form requires WhatsApp + country; enforce that here so the
+// HTML flow behaves exactly as before (the API treats them as optional).
+if ($clean['whatsapp'] === '') {
+    $errors['whatsapp'] = 'required';
 }
-
-/* -----------------------------------------------------------
- *  Collect + validate
- * --------------------------------------------------------- */
-$fullName = clean('full_name');
-$email    = clean('email');
-$whatsapp = clean('whatsapp');
-$country  = clean('country');
-$interest = clean('travel_interest');
-
-// ---- Tracking fields (lead source + UTM) ----
-// lead_source is a slug; keep only safe characters and fall back to 'direct-form'.
-$leadSource = strtolower(clean('lead_source'));
-$leadSource = preg_replace('/[^a-z0-9\-]/', '', $leadSource);
-if ($leadSource === '' || mb_strlen($leadSource) > 100) {
-    $leadSource = 'direct-form';
-}
-// UTM values: sanitised, capped at 100 chars, null when absent.
-$utm = [];
-foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as $k) {
-    $v = clean($k);
-    $utm[$k] = ($v === '') ? null : mb_substr($v, 0, 100);
-}
-
-// Must mirror the <select> options in index.php, or valid submissions are rejected.
-$allowedInterests = [
-    'Family Vacation',
-    'Beach Getaway',
-    'Cruise',
-    'City Break',
-    'Weekend Trip',
-    'Honeymoon or Anniversary',
-    'Visiting Family or Friends',
-    'All of the Above',
-];
-$errors = [];
-
-if ($fullName === '' || mb_strlen($fullName) > 120) {
-    $errors[] = 'name';
-}
-if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 180) {
-    $errors[] = 'email';
-}
-// WhatsApp: digits, spaces, +, -, () — at least 7 digits.
-$digits = preg_replace('/\D+/', '', $whatsapp);
-if (strlen($digits) < 7 || strlen($digits) > 20) {
-    $errors[] = 'whatsapp';
-}
-if ($country === '' || mb_strlen($country) > 80) {
-    $errors[] = 'country';
-}
-if (!in_array($interest, $allowedInterests, true)) {
-    $errors[] = 'interest';
+if ($clean['country'] === '') {
+    $errors['country'] = 'required';
 }
 
 // On validation failure, bounce back to the form with a flag.
@@ -112,39 +49,14 @@ if ($errors) {
 }
 
 /* -----------------------------------------------------------
- *  Persist (silent on DB failure)
+ *  Persist + notify (silent on failure)
  * --------------------------------------------------------- */
-$ip = client_ip();
+$ip  = Validator::clientIp();
 $pdo = db();
 
 if ($pdo instanceof PDO) {
     try {
-        $stmt = $pdo->prepare(
-            'INSERT INTO leads
-                (full_name, email, whatsapp, country, travel_interest,
-                 lead_source, utm_source, utm_medium, utm_campaign, utm_content, utm_term, ip_address)
-             VALUES
-                (:full_name, :email, :whatsapp, :country, :travel_interest,
-                 :lead_source, :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term, :ip)'
-        );
-        $stmt->execute([
-            ':full_name'       => $fullName,
-            ':email'           => $email,
-            ':whatsapp'        => $whatsapp,
-            ':country'         => $country,
-            ':travel_interest' => $interest,
-            ':lead_source'     => $leadSource,
-            ':utm_source'      => $utm['utm_source'],
-            ':utm_medium'      => $utm['utm_medium'],
-            ':utm_campaign'    => $utm['utm_campaign'],
-            ':utm_content'     => $utm['utm_content'],
-            ':utm_term'        => $utm['utm_term'],
-            ':ip'              => $ip,
-        ]);
-
-        // Log the referral click that is about to happen.
-        $pdo->prepare('INSERT INTO referral_clicks (ip_address) VALUES (:ip)')
-            ->execute([':ip' => $ip]);
+        (new Leads($pdo))->create($clean, $ip);
     } catch (PDOException $e) {
         // Never surface DB errors to the visitor.
         error_log('[TravelWithNaomi] Lead insert failed: ' . $e->getMessage());
@@ -152,71 +64,8 @@ if ($pdo instanceof PDO) {
 }
 
 /* -----------------------------------------------------------
- *  Notify the ambassador by email
- *  ----------------------------------------------------------
- *  The subject + body are identical regardless of transport.
- *  If SMTP is configured (smtp_ready()), send via PHPMailer over
- *  TLS. Otherwise fall back to PHP mail(). Either way, email
- *  failures never block the redirect.
- * --------------------------------------------------------- */
-if (MY_EMAIL !== '[MY_EMAIL]' && filter_var(MY_EMAIL, FILTER_VALIDATE_EMAIL)) {
-    $subject = 'New TravelWithNaomi lead: ' . $fullName;
-    $body =
-        "You captured a new lead from your landing page.\n\n" .
-        "Name:            {$fullName}\n" .
-        "Email:           {$email}\n" .
-        "WhatsApp:        {$whatsapp}\n" .
-        "Country:         {$country}\n" .
-        "Travel interest: {$interest}\n" .
-        "IP address:      {$ip}\n" .
-        "Captured at:     " . date('Y-m-d H:i:s') . " UTC\n";
-
-    if (smtp_ready()) {
-        // ---- SMTP path (PHPMailer over TLS) ----
-        require_once __DIR__ . '/libs/phpmailer/Exception.php';
-        require_once __DIR__ . '/libs/phpmailer/PHPMailer.php';
-        require_once __DIR__ . '/libs/phpmailer/SMTP.php';
-
-        $mail = new PHPMailer\PHPMailer\PHPMailer(false); // false = don't throw; we check return value
-        try {
-            $mail->isSMTP();
-            $mail->Host       = SMTP_HOST;
-            $mail->SMTPAuth   = true;
-            $mail->Username   = SMTP_USERNAME;
-            $mail->Password   = SMTP_PASSWORD;
-            $mail->Port       = SMTP_PORT;
-            // 465 = implicit SSL, anything else (e.g. 587) = STARTTLS.
-            $mail->SMTPSecure = (SMTP_PORT === 465)
-                ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
-                : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-
-            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            $mail->addAddress(MY_EMAIL);
-            $mail->addReplyTo($email, $fullName);
-            $mail->CharSet = 'UTF-8';
-            $mail->Subject = $subject;
-            $mail->Body    = $body; // plain text
-            $mail->send();
-        } catch (\Throwable $e) {
-            // Log silently; never surface to the visitor or block the redirect.
-            error_log('[TravelWithNaomi] SMTP send failed: ' . $e->getMessage() . ' | ' . $mail->ErrorInfo);
-        }
-    } else {
-        // ---- Fallback path (PHP mail(), the cPanel default) ----
-        $headers = [
-            'From: TravelWithNaomi <no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '>',
-            'Reply-To: ' . $email,
-            'Content-Type: text/plain; charset=UTF-8',
-        ];
-        // @-suppressed: mail() may be disabled on some hosts; never block the redirect.
-        @mail(MY_EMAIL, $subject, $body, implode("\r\n", $headers));
-    }
-}
-
-/* -----------------------------------------------------------
  *  Success overlay → redirect to the referral link
  * --------------------------------------------------------- */
-$referral = MY_REFERRAL_LINK;
 $safeReferral = htmlspecialchars($referral, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>

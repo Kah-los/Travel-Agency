@@ -1,0 +1,32 @@
+# =============================================================
+#  TravelWithNaomi API — routing + lockdown
+# -------------------------------------------------------------
+#  Routes every /api/* request to index.php (front controller)
+#  while keeping the lib/ folder unreachable from the web.
+# =============================================================
+
+# Never list directory contents.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Run relative to the /api/ folder.
+  RewriteBase /api/
+
+  # Send everything that is not a real file/dir to the front controller,
+  # passing the matched path through as ?_route= for robust parsing.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php?_route=$1 [QSA,L]
+</IfModule>
+
+# Block direct web access to the service classes.
+RedirectMatch 404 ^/api/lib/.*$
+
+# JSON responses should not be cached by intermediaries.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Cache-Control "no-store"
+</IfModule>

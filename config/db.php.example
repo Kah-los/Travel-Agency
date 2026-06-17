@@ -27,6 +27,29 @@ function env_or(string $name, string $default): string {
     return ($val !== false && $val !== '') ? $val : $default;
 }
 
+// ---- APP / REFERRAL SETTINGS ----------------------------------------------
+// These were previously hard-coded as placeholders inside submit.php and
+// admin/login.php. Centralising them here lets BOTH the HTML form and the
+// JSON API share one source of truth. Fill them in (or set the env vars).
+//
+// Naomi's Vortex365 referral URL (visitors are redirected here after signup).
+define('APP_REFERRAL_LINK', env_or('APP_REFERRAL_LINK', '[MY_REFERRAL_LINK]'));
+// Where new-lead notification emails are sent.
+define('APP_NOTIFY_EMAIL', env_or('APP_NOTIFY_EMAIL', '[MY_EMAIL]'));
+// Admin credentials for the API login endpoint (and reused by admin/login.php
+// if you choose to point it here). The classic admin/login.php still works
+// with its own in-file placeholders if you leave these unset.
+define('APP_ADMIN_USERNAME', env_or('APP_ADMIN_USERNAME', '[ADMIN_USERNAME]'));
+define('APP_ADMIN_PASSWORD', env_or('APP_ADMIN_PASSWORD', '[ADMIN_PASSWORD]'));
+
+// ---- API SETTINGS ---------------------------------------------------------
+// Comma-separated list of allowed cross-origin origins for the JSON API.
+// Leave empty for same-origin only (the secure default).
+// e.g. 'https://app.example.com,https://admin.example.com'
+define('API_ALLOWED_ORIGINS', env_or('API_ALLOWED_ORIGINS', ''));
+// Max public lead submissions allowed per IP per minute (429 on exceed).
+define('API_RATE_LIMIT', (int) env_or('API_RATE_LIMIT', '10'));
+
 // ---- DATABASE CREDENTIALS -------------------------------------------------
 // Railway env var: MYSQLHOST
 define('DB_HOST', env_or('MYSQLHOST', ''));         // e.g. 'localhost' on cPanel
@@ -101,6 +124,9 @@ function db() {
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
+            // Bound how long a connection attempt can hang so the public
+            // landing page never stalls if the database is unreachable.
+            PDO::ATTR_TIMEOUT            => 5,
         ]);
     } catch (PDOException $e) {
         // Silent for the visitor; logged for the owner.

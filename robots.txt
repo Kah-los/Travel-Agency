@@ -1,9 +1,11 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
 Disallow: /config/
 Disallow: /setup/
 Disallow: /libs/
+Disallow: /migrations/
 
 # Update the domain below if your live site uses a different one.
 Sitemap: https://travelwithnaomi.com/sitemap.xml

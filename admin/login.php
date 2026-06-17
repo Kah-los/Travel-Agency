@@ -11,11 +11,29 @@
  * =============================================================
  */
 
+// Load shared config so admin credentials live in ONE place (config/db.php),
+// shared with the JSON API. Guarded so the page still loads without it.
+$configFile = __DIR__ . '/../config/db.php';
+if (is_file($configFile)) {
+    require_once $configFile;
+}
+
+// Harden the session cookie before the session starts.
+$secureCookie = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure'   => $secureCookie,
+]);
 session_start();
 
-// ---- ADMIN CREDENTIALS — replace these placeholders ----
-const ADMIN_USERNAME = '[ADMIN_USERNAME]';
-const ADMIN_PASSWORD = '[ADMIN_PASSWORD]';
+// ---- ADMIN CREDENTIALS ----
+// Recommended: set APP_ADMIN_USERNAME / APP_ADMIN_PASSWORD in config/db.php.
+// These fall back to placeholders if config is not present, so nothing breaks.
+define('ADMIN_USERNAME', defined('APP_ADMIN_USERNAME') ? APP_ADMIN_USERNAME : '[ADMIN_USERNAME]');
+define('ADMIN_PASSWORD', defined('APP_ADMIN_PASSWORD') ? APP_ADMIN_PASSWORD : '[ADMIN_PASSWORD]');
 
 // ---- Brute-force settings ----
 const MAX_ATTEMPTS = 5;

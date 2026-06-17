@@ -28,6 +28,13 @@ DirectoryIndex index.php index.html
 RedirectMatch 404 ^/config/.*$
 RedirectMatch 404 ^/setup/.*$
 RedirectMatch 404 ^/libs/.*$
+RedirectMatch 404 ^/migrations/.*$
+RedirectMatch 404 ^/api/lib/.*$
+
+# ---- Block the CLI migration runner from the web (it is CLI-only) ----
+<Files "migrate.php">
+  Require all denied
+</Files>
 
 # ---- Security headers ----
 <IfModule mod_headers.c>
@@ -35,6 +42,14 @@ RedirectMatch 404 ^/libs/.*$
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+  # Content Security Policy. Allows the CDNs this site actually uses
+  # (Tailwind + Alpine + Google Fonts + Unsplash imagery). 'unsafe-inline'
+  # and 'unsafe-eval' are required by the Tailwind Play CDN and Alpine.js.
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; connect-src 'self'; form-action 'self'"
+
+  # Enable HSTS only AFTER HTTPS/SSL is active and confirmed working:
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
 # ---- Gzip / deflate compression ----

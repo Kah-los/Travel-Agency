@@ -14,8 +14,20 @@
  * =============================================================
  */
 
+// Load shared config when present (referral link, etc.). Guarded so the
+// landing page still renders on a fresh checkout without config/db.php.
+$configFile = __DIR__ . '/config/db.php';
+if (is_file($configFile)) {
+    require_once $configFile;
+}
+
 // -------- EDIT THESE LINKS --------
-$REFERRAL_LINK = '[MY_REFERRAL_LINK]';   // Naomi's Vortex365 referral URL
+// The referral link comes from config (APP_REFERRAL_LINK) so it is set in ONE
+// place and shared with submit.php and the API. Falls back to the classic
+// placeholder when config is absent or still unset.
+$REFERRAL_LINK = (defined('APP_REFERRAL_LINK') && APP_REFERRAL_LINK !== '' && APP_REFERRAL_LINK !== '[MY_REFERRAL_LINK]')
+    ? APP_REFERRAL_LINK
+    : '[MY_REFERRAL_LINK]';   // Naomi's Vortex365 referral URL
 $WHATSAPP_LINK = '[MY_WHATSAPP_LINK]';   // e.g. https://wa.me/447000000000
 $INSTAGRAM     = '[MY_SOCIAL_LINKS]';    // Instagram URL
 $FACEBOOK      = '[MY_SOCIAL_LINKS]';    // Facebook URL
@@ -506,7 +518,7 @@ $ogImage   = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=
       </div>
 
       <nav class="flex gap-7 text-sm text-white/70">
-        <a href="#" class="transition hover:text-gold">Privacy</a>
+        <a href="privacy.php" class="transition hover:text-gold">Privacy</a>
         <a href="#how" class="transition hover:text-gold">How It Works</a>
         <a href="#get-started" class="transition hover:text-gold">Get Started</a>
       </nav>
