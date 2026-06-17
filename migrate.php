@@ -90,13 +90,23 @@ foreach ($pending as $path) {
         $pdo->beginTransaction();
 
         foreach (split_sql_statements($sql) as $statement) {
-            $pdo->exec($statement);
+            // Use query() + closeCursor() rather than exec(): some guarded
+            // migrations run PREPARE/EXECUTE that return a result set, which
+            // must be consumed before the next statement on the connection.
+            $result = $pdo->query($statement);
+            if ($result instanceof PDOStatement) {
+                $result->closeCursor();
+            }
         }
 
         $stmt = $pdo->prepare('INSERT INTO schema_migrations (filename) VALUES (:filename)');
         $stmt->execute([':filename' => $filename]);
 
-        $pdo->commit();
+        // MySQL implicitly commits after DDL (CREATE/ALTER), so the transaction
+        // may already be closed by this point — only commit if one is active.
+        if ($pdo->inTransaction()) {
+            $pdo->commit();
+        }
         echo "OK\n";
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) {
